@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1096532556785399319}
   - component: {fileID: 1172838944982021374}
   - component: {fileID: -4830657941618481081}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WinterGroundRockSnow_v2
   m_TagString: Untagged
   m_Icon: {fileID: 0}

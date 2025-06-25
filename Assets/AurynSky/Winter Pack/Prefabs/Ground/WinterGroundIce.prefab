@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4437522886667417838}
   - component: {fileID: 2425485597951492599}
   - component: {fileID: 981704881791477988}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WinterGroundIce
   m_TagString: Untagged
   m_Icon: {fileID: 0}

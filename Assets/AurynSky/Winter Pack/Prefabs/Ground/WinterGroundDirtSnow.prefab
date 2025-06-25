@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7822279759407737640}
   - component: {fileID: 1734843264980576864}
   - component: {fileID: -6838191917527066784}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WinterGroundDirtSnow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
