@@ -1,0 +1,93 @@
+using UnityEngine;
+
+public class Magazine : MonoBehaviour
+{
+    public int maxShots { private set; get; }
+    private int shots = 15;
+    [SerializeField] private Collider magCollider;
+    [SerializeField] private Collider interactionCollider;
+    [SerializeField] private float groundDisapearTime = 2f;
+    private float groundTouchedTime = 0f;
+    public Magazinespawner magazinespawner { set; private get; }
+
+    public enum AmmoType { Pistol, Rifle, Sniper, Shotgun }
+
+    private void Update()
+    {
+        if (groundTouchedTime > 0)
+        {
+            groundTouchedTime += Time.deltaTime;
+            if (groundTouchedTime >= groundDisapearTime)
+            {
+                Destroy(this.gameObject);
+            }
+        }
+    }
+    public bool removeBullet()
+    {
+        if (shots > 0)
+        {
+            shots--;
+            return true;
+        }
+        return false;
+    }
+
+    public void reload()
+    {
+        shots = maxShots;
+    }
+
+
+    public void turnOffColliders()
+    {
+        magCollider.enabled = false;
+    }
+
+    public void turnOnColliders()
+    {
+        magCollider.enabled = true;
+    }
+
+    public void turnOffInteraction()
+    {
+        interactionCollider.enabled = false;
+    }
+
+    public void turnOnInteraction()
+    {
+        interactionCollider.enabled = true;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == 3 || collision.gameObject.layer == 0)
+        {
+            groundTouchedTime += Time.deltaTime;
+            if (groundTouchedTime >= groundDisapearTime)
+            {
+                Destroy(this.gameObject);
+            }
+        }
+    }
+
+
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.layer == 3 || collision.gameObject.layer == 0)
+        {
+            groundTouchedTime = 0f;
+        }
+    }
+
+    public void grabed()
+    {
+        Debug.Log("Mag deselected");
+        if (magazinespawner != null)
+        {
+            magazinespawner.magGrabed();
+            magazinespawner = null;
+        }
+    }
+}
