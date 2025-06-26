@@ -9,16 +9,19 @@ public abstract class BaseEnemy : MonoBehaviour
     public float attackCooldown = 1f;
     public float attackRange = 2f;
     public float detectionRange = 15f;
+    [SerializeField] private Transform detectionPoint;
 
     protected float currentHealth;
     protected float lastAttackTime;
     protected Transform player;
     protected NavMeshAgent agent;
+    [SerializeField] private LayerMask detectionLayerMask;
+    [SerializeField] private LayerMask playerLayer;
 
     protected virtual void Start()
     {
         currentHealth = maxHealth;
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        player = GameObject.FindGameObjectWithTag("Player").transform.GetChild(0).transform;
         agent = GetComponent<NavMeshAgent>();
     }
 
@@ -30,22 +33,32 @@ public abstract class BaseEnemy : MonoBehaviour
 
         if (distance <= detectionRange)
         {
-            if (distance <= attackRange)
+            if (distance <= attackRange && !Physics.Linecast(detectionPoint.position, player.position, detectionLayerMask))
             {
                 agent.isStopped = true;
-                if (Time.time - lastAttackTime >= attackCooldown)
+
+                // Smoothly rotate toward the player
+                Vector3 direction = (player.position - transform.position).normalized;
+                direction.y = 0;
+                if (direction != Vector3.zero)
+                {
+                    Quaternion lookRotation = Quaternion.LookRotation(direction);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+                }
+
+                if (Time.time - lastAttackTime >= attackCooldown && Physics.Linecast(detectionPoint.position, (detectionPoint.forward * attackRange) + detectionPoint.position, playerLayer))
                 {
                     Attack();
                     lastAttackTime = Time.time;
                 }
+
+
             }
             else
             {
                 agent.isStopped = false;
                 agent.SetDestination(player.position);
             }
-
-
         }
     }
 

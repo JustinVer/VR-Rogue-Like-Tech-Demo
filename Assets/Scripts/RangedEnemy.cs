@@ -9,6 +9,8 @@ public class RangedEnemy : BaseEnemy
 
     protected override void Attack()
     {
+
+        Debug.Log("ranged shoot");
         if (projectilePrefab != null && firePoint != null)
         {
             GameObject proj = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
