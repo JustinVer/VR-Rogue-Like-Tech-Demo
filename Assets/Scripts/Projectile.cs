@@ -12,7 +12,7 @@ public class Projectile : MonoBehaviour
 
     void OnTriggerEnter(UnityEngine.Collider other)
     {
-        if (other.gameObject.TryGetComponent(out Enemy enemy))
+        if (other.gameObject.TryGetComponent(out BaseEnemy enemy))
         {
             enemy.TakeDamage((damage + PlayerUpgradeSystem.instance.damageBonus) * PlayerUpgradeSystem.instance.damageModifier);
         }

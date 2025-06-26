@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 1414900200080066050}
   - component: {fileID: 4065873827987875547}
   - component: {fileID: 7242762243973708199}
-  - component: {fileID: 1691691082434280443}
+  - component: {fileID: 2749946147524868345}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: MeleeEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -159,7 +159,7 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &1691691082434280443
+--- !u!114 &2749946147524868345
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -168,7 +168,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1873796049094065829}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7b028a78debb2341a21862c2abf4cec, type: 3}
+  m_Script: {fileID: 11500000, guid: 18b399a9550e47c43921f6df0b9be11c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 20
+  maxHealth: 100
+  damage: 10
+  attackCooldown: 1
+  attackRange: 2
+  detectionRange: 25
