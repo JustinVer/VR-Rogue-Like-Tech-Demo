@@ -150,7 +150,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 545709662111615581}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 03d1fe4e93c9d4445b3a611df2ee5713, type: 2}
   m_CullingMode: 0
@@ -608,6 +608,7 @@ GameObject:
   - component: {fileID: 7771874256078074382}
   - component: {fileID: 4633545908140097045}
   - component: {fileID: 269379054822428073}
+  - component: {fileID: 6644695732588534229}
   m_Layer: 6
   m_Name: Pistol
   m_TagString: Untagged
@@ -695,6 +696,7 @@ MonoBehaviour:
   m_InteractionManager: {fileID: 0}
   m_Colliders:
   - {fileID: 7492566780275881212}
+  - {fileID: 6644695732588534229}
   m_InteractionLayers:
     m_Bits: 1
   m_DistanceCalculationMode: 1
@@ -854,7 +856,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 308588621836008061, guid: 532c80410ba4e2e46aa9c81cdc0b127d, type: 3}
   muzzlePoint: {fileID: 8459751567444922206}
   shootForce: 20
-  fireAction: {fileID: 7752054695456217634, guid: 8844d243145ea564aa26cfc2f00354c7, type: 3}
+  fireAction: {fileID: 7752054695456217634, guid: e049cd399c9297f4b837f445ca747ec8, type: 3}
   fireRateDelay: 0.2
   gunCollider:
   - {fileID: 7492566780275881212}
@@ -862,6 +864,27 @@ MonoBehaviour:
   sliderInteractable: {fileID: 8896098163593662997}
   magCollider: {fileID: 630046023208537317}
   animator: {fileID: 4262208009420343831}
+--- !u!65 &6644695732588534229
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4049262272867246835}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.031464845, y: 0.099421844, z: 0.07527399}
+  m_Center: {x: -0.0005041212, y: 0.020564847, z: 0.0097750425}
 --- !u!1 &7090811631595373153
 GameObject:
   m_ObjectHideFlags: 0
@@ -1052,7 +1075,7 @@ Rigidbody:
     m_Bits: 256
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 255
+    m_Bits: 767
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
@@ -1169,7 +1192,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7832397932011174143}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ad34abafad169848a38072baa96cdb2, type: 3}
   m_Name: 
@@ -1346,7 +1369,7 @@ BoxCollider:
     m_Bits: 256
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 255
+    m_Bits: 767
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0

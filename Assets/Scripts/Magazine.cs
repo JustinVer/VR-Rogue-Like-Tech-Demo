@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class Magazine : MonoBehaviour
 {
@@ -8,6 +10,9 @@ public class Magazine : MonoBehaviour
     [SerializeField] private Collider interactionCollider;
     [SerializeField] private float groundDisapearTime = 2f;
     private float groundTouchedTime = 0f;
+    [SerializeField] private InteractionLayerMask defaultLayerMask;
+    [SerializeField] private InteractionLayerMask magTypeLayerMask;
+    [SerializeField] private XRGrabInteractable interactable;
     public Magazinespawner magazinespawner { set; private get; }
 
     public enum AmmoType { Pistol, Rifle, Sniper, Shotgun }
@@ -81,13 +86,25 @@ public class Magazine : MonoBehaviour
         }
     }
 
-    public void grabed()
+    public void droped()
     {
         Debug.Log("Mag deselected");
         if (magazinespawner != null)
         {
             magazinespawner.magGrabed();
             magazinespawner = null;
+        }
+        if (interactable != null && interactable.interactorsHovering.Count == 0)
+        {
+            interactable.interactionLayers = defaultLayerMask;
+        }
+    }
+
+    public void grabed()
+    {
+        if (interactable != null)
+        {
+            interactable.interactionLayers = magTypeLayerMask;
         }
     }
 }

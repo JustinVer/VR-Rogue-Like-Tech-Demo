@@ -11,7 +11,7 @@ public class CrossbowShooter : MonoBehaviour
     public Transform muzzlePoint;
     public float shootForce = 20f;
     public InputActionReference fireAction;
-    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grabInteractable;
+    private XRGrabInteractable grabInteractable;
     private bool isHeld = false;
     private float timeSinceShot = 0f;
     public float fireRateDelay = 0.2f;
@@ -100,7 +100,7 @@ public class CrossbowShooter : MonoBehaviour
             {
                 hasShot = false;
             }
-            animator.SetTrigger("Fire");
+            //animator.SetTrigger("Fire");
         }
     }
 
