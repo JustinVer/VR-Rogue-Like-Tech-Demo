@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public abstract class BaseEnemy : MonoBehaviour
+public abstract class BaseEnemy : MonoBehaviour, Health
 {
     [Header("Enemy Settings")]
     public float maxHealth = 100f;
@@ -17,6 +17,8 @@ public abstract class BaseEnemy : MonoBehaviour
     protected NavMeshAgent agent;
     [SerializeField] private LayerMask detectionLayerMask;
     [SerializeField] private LayerMask playerLayer;
+    protected bool needLineOfSit = true;
+    private bool playerDetected = false;
 
     protected virtual void Start()
     {
@@ -31,9 +33,10 @@ public abstract class BaseEnemy : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, player.position);
 
-        if (distance <= detectionRange)
+        if (playerDetected || distance <= detectionRange)
         {
-            if (distance <= attackRange && !Physics.Linecast(detectionPoint.position, player.position, detectionLayerMask))
+            playerDetected = true;
+            if (distance <= attackRange && (!Physics.Linecast(detectionPoint.position, player.position, detectionLayerMask) || !needLineOfSit))
             {
                 agent.isStopped = true;
 

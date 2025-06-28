@@ -27,7 +27,7 @@ public class CrossbowShooter : MonoBehaviour
 
     void Awake()
     {
-        grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        grabInteractable = GetComponent<XRGrabInteractable>();
     }
 
     void OnEnable()
