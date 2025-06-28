@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class RangedEnemy : BaseEnemy
@@ -6,19 +7,24 @@ public class RangedEnemy : BaseEnemy
     public GameObject projectilePrefab;
     public Transform firePoint;
     public float shootForce = 20f;
+    [SerializeField] private float spawnDelay = 0.5f;
 
     protected override void Attack()
     {
-
-        Debug.Log("ranged shoot");
         if (projectilePrefab != null && firePoint != null)
         {
-            GameObject proj = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+            StartCoroutine(spawnBulletAfter(spawnDelay));
+        }
+    }
 
-            if (proj.TryGetComponent<Rigidbody>(out var rb))
-            {
-                rb.velocity = firePoint.forward * shootForce;
-            }
+    private IEnumerator spawnBulletAfter(float wait)
+    {
+        yield return new WaitForSeconds(wait);
+        GameObject proj = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+
+        if (proj.TryGetComponent<Rigidbody>(out var rb))
+        {
+            rb.velocity = firePoint.forward * shootForce;
         }
     }
 }
