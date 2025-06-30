@@ -43,7 +43,7 @@ public abstract class BaseEnemy : MonoBehaviour, Health
         {
             playerDetected = true;
 
-            if (distance <= attackRange && (!Physics.Linecast(detectionPoint.position, player.position, detectionLayerMask) || !needLineOfSit))
+            if (distance <= attackRange && (!Physics.Linecast(detectionPoint.position, player.position + new Vector3(0, 1, 0), detectionLayerMask) || !needLineOfSit))
             {
                 agent.isStopped = true;
                 rb.velocity = Vector3.zero;

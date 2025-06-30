@@ -125,7 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40a7c8bdba1ff62449e9f997fb0275f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionRadius: 2
+  explosionRadius: 1.5
   explosionDamage: 10
 --- !u!4 &3352581880487292773 stripped
 Transform:

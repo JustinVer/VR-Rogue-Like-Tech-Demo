@@ -120,15 +120,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f260e7518a1356b458ff19e1cbe38252, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 20
+  maxHealth: 40
   damage: 10
-  attackCooldown: 3
-  attackRange: 40
-  detectionRange: 40
+  attackCooldown: 6
+  attackRange: 55
+  detectionRange: 60
   detectionPoint: {fileID: 4691478531205866752}
   detectionLayerMask:
     serializedVersion: 2
-    m_Bits: 9
+    m_Bits: 8
   playerLayer:
     serializedVersion: 2
     m_Bits: 128
