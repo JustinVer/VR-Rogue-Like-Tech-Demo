@@ -94,7 +94,7 @@ NavMeshAgent:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1873796049094065829}
   m_Enabled: 1
-  m_AgentTypeID: 0
+  m_AgentTypeID: -1923039037
   m_Radius: 0.72
   m_Speed: 1.5
   m_Acceleration: 8
@@ -138,7 +138,7 @@ MonoBehaviour:
   rb: {fileID: 4065873827987875547}
   projectilePrefab: {fileID: 5500885643938334253, guid: cb5ac3094439da04faac43a31437592e, type: 3}
   firePoint: {fileID: 7289137338109677917}
-  shootForce: 1
+  shootForce: 5
   spawnDelay: 0.4
 --- !u!1 &1950507650990489565
 GameObject:

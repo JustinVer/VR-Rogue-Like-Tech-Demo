@@ -88,7 +88,6 @@ public class Magazine : MonoBehaviour
 
     public void droped()
     {
-        Debug.Log("Mag deselected");
         if (magazinespawner != null)
         {
             magazinespawner.magGrabed();

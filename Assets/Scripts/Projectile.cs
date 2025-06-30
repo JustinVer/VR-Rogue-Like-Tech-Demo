@@ -13,11 +13,14 @@ public class Projectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.TryGetComponent(out Health enemy))
+        if (!other.isTrigger)
         {
-            enemy.TakeDamage((damage + PlayerUpgradeSystem.instance.damageBonus) * PlayerUpgradeSystem.instance.damageModifier);
+            if (other.gameObject.TryGetComponent(out Health enemy))
+            {
+                enemy.TakeDamage((damage + PlayerUpgradeSystem.instance.damageBonus) * PlayerUpgradeSystem.instance.damageModifier);
+            }
+            Destroy(gameObject);
         }
-        Destroy(gameObject);
     }
 
 

@@ -72,7 +72,7 @@ NavMeshAgent:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1873796049094065829}
   m_Enabled: 1
-  m_AgentTypeID: 0
+  m_AgentTypeID: -334000983
   m_Radius: 0.68
   m_Speed: 1.5
   m_Acceleration: 8
@@ -101,7 +101,7 @@ MonoBehaviour:
   maxHealth: 20
   damage: 10
   attackCooldown: 2.2
-  attackRange: 2.2
+  attackRange: 1.75
   detectionRange: 25
   detectionPoint: {fileID: 7685486507208605337}
   detectionLayerMask:

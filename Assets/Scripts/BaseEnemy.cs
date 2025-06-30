@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -25,17 +24,21 @@ public abstract class BaseEnemy : MonoBehaviour, Health
     [SerializeField] private float deathAnimationTime;
     [SerializeField] private Rigidbody rb;
     protected bool attackInterupded = false;
+    protected bool dead = false;
 
     protected virtual void Start()
     {
         currentHealth = maxHealth;
         player = GameObject.FindGameObjectWithTag("Player").transform.GetChild(0).transform;
         agent = GetComponent<NavMeshAgent>();
+
+        // Disable agent auto rotation — we handle it ourselves
+        agent.updateRotation = false;
     }
 
     protected virtual void Update()
     {
-        if (player == null) return;
+        if (player == null || dead) return;
 
         float distance = Vector3.Distance(detectionPoint.position, player.position);
 
@@ -43,33 +46,50 @@ public abstract class BaseEnemy : MonoBehaviour, Health
         {
             playerDetected = true;
 
-            if (distance <= attackRange && (!Physics.Linecast(detectionPoint.position, player.position + new Vector3(0, 1, 0), detectionLayerMask) || !needLineOfSit))
+            // Check line of sight if needed
+            bool hasLineOfSight = !Physics.Linecast(detectionPoint.position, player.position + Vector3.up, detectionLayerMask);
+            if (distance <= attackRange && (hasLineOfSight || !needLineOfSit))
             {
                 agent.isStopped = true;
                 rb.velocity = Vector3.zero;
                 animator.SetBool("Running", false);
-                // Smoothly rotate toward the player
-                Vector3 direction = (player.position - detectionPoint.position).normalized;
-                direction.y = 0;
-                if (direction != Vector3.zero)
+
+                // Rotate toward the player
+                Vector3 lookDirection = (player.position - detectionPoint.position).normalized;
+                lookDirection.y = 0;
+
+                if (lookDirection != Vector3.zero)
                 {
-                    Quaternion lookRotation = Quaternion.LookRotation(direction);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
-                    AnimatorStateInfo animInfo = animator.GetCurrentAnimatorStateInfo(0);
-                    if (Time.time - lastAttackTime >= attackCooldown && ((transform.rotation.y - lookRotation.y) < 0.1 && (transform.rotation.y - lookRotation.y) > -0.1) && (animInfo.IsName("Idle") || animInfo.IsName("Walk") || animInfo.IsName("Run")))
-                    {
-                        animator.SetTrigger("Attacking");
-                        attackInterupded = false;
-                        Attack();
-                        lastAttackTime = Time.time;
-                    }
+                    Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+                }
+
+                float angleToPlayer = Vector3.Angle(transform.forward, lookDirection);
+
+                // Only attack if roughly facing the player
+                AnimatorStateInfo animInfo = animator.GetCurrentAnimatorStateInfo(0);
+                if (Time.time - lastAttackTime >= attackCooldown && angleToPlayer < 10f && (animInfo.IsName("Idle") || animInfo.IsName("Walk") || animInfo.IsName("Run")))
+                {
+                    animator.SetTrigger("Attacking");
+                    attackInterupded = false;
+                    Attack();
+                    lastAttackTime = Time.time;
                 }
             }
             else
             {
                 agent.isStopped = false;
-                animator.SetBool("Running", true);
                 agent.SetDestination(player.position);
+                animator.SetBool("Running", true);
+
+                // Rotate toward movement direction (optional)
+                if (agent.velocity.sqrMagnitude > 0.1f)
+                {
+                    Vector3 moveDir = agent.velocity.normalized;
+                    moveDir.y = 0;
+                    Quaternion moveRot = Quaternion.LookRotation(moveDir);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, moveRot, Time.deltaTime * 5f);
+                }
             }
         }
     }
@@ -79,8 +99,10 @@ public abstract class BaseEnemy : MonoBehaviour, Health
         currentHealth -= amount;
         if (currentHealth <= 0)
         {
-            animator.ResetTrigger("Hit");
-            StartCoroutine(Die());
+            if (!dead)
+            {
+                StartCoroutine(Die());
+            }
         }
         else
         {
@@ -94,16 +116,17 @@ public abstract class BaseEnemy : MonoBehaviour, Health
 
     protected virtual IEnumerator WaitForAnimationToFinishBool(string animationName, string boolName, bool value)
     {
-        yield return new WaitForNextFrameUnit();
+        yield return null;
         yield return new WaitUntil(() => !animator.GetCurrentAnimatorStateInfo(0).IsName(animationName));
         animator.SetBool(boolName, value);
     }
 
     protected virtual IEnumerator Die()
     {
-        animator.ResetTrigger("Hit");
+        dead = true;
         animator.SetTrigger("Dead");
         yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).IsName("Die"));
+        rb.velocity = Vector3.zero;
         yield return new WaitForSeconds(deathAnimationTime);
         Destroy(gameObject);
     }
