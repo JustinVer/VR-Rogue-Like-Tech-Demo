@@ -85,7 +85,10 @@ public abstract class BaseEnemy : MonoBehaviour, Health
         else
         {
             attackInterupded = true;
-            animator.SetTrigger("Hit");
+            if (!animator.GetCurrentAnimatorStateInfo(0).IsName("GetHit"))
+            {
+                animator.SetTrigger("Hit");
+            }
         }
     }
 
