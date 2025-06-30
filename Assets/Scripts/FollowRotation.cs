@@ -13,8 +13,8 @@ public class FollowRotation : MonoBehaviour
             return;
 
         // Get target rotation in Euler angles
-        Vector3 targetEuler = follow.rotation.eulerAngles;
-        Vector3 currentEuler = transform.rotation.eulerAngles;
+        Vector3 targetEuler = follow.localRotation.eulerAngles;
+        Vector3 currentEuler = transform.localRotation.eulerAngles;
 
         // Apply selected axes
         if (!followX) targetEuler.x = currentEuler.x;
@@ -23,6 +23,6 @@ public class FollowRotation : MonoBehaviour
 
         // Apply offset and set rotation
         Quaternion finalRotation = Quaternion.Euler(targetEuler + offset);
-        transform.rotation = finalRotation;
+        transform.localRotation = finalRotation;
     }
 }

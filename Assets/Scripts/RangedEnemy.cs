@@ -20,11 +20,14 @@ public class RangedEnemy : BaseEnemy
     private IEnumerator spawnBulletAfter(float wait)
     {
         yield return new WaitForSeconds(wait);
-        GameObject proj = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
-
-        if (proj.TryGetComponent<Rigidbody>(out var rb))
+        if (attackInterupded == false)
         {
-            rb.velocity = firePoint.forward * shootForce;
+            GameObject proj = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+
+            if (proj.TryGetComponent<Rigidbody>(out var rb))
+            {
+                rb.velocity = firePoint.forward * shootForce;
+            }
         }
     }
 }

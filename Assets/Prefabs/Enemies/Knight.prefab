@@ -112,6 +112,8 @@ MonoBehaviour:
     m_Bits: 128
   needLineOfSit: 0
   animator: {fileID: 8306235787224461424}
+  deathAnimationTime: 1.5
+  rb: {fileID: 4065873827987875547}
 --- !u!136 &6274071105320802755
 CapsuleCollider:
   m_ObjectHideFlags: 0

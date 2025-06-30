@@ -134,7 +134,8 @@ MonoBehaviour:
     m_Bits: 128
   needLineOfSit: 0
   animator: {fileID: 4631615508438191344}
-  deathAnimationTime: 1.1
+  deathAnimationTime: 1.5
+  rb: {fileID: 4065873827987875547}
   projectilePrefab: {fileID: 1826154636568633360, guid: b8a842c62f1016b4a957083a87fd2764, type: 3}
   firePoint: {fileID: 4684870245278023176}
   fireTimeMultiplyer: 12.5

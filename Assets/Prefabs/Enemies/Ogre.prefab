@@ -135,6 +135,8 @@ MonoBehaviour:
     m_Bits: 128
   needLineOfSit: 0
   animator: {fileID: 2938663987561791743}
+  deathAnimationTime: 1.5
+  rb: {fileID: 4065873827987875547}
 --- !u!1 &3314088986517738638
 GameObject:
   m_ObjectHideFlags: 0
