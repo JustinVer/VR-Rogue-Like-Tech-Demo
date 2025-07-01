@@ -13,7 +13,6 @@ public class ExplodeOnHit : MonoBehaviour
             {
                 if (hit.transform.gameObject.TryGetComponent(out Health enemy))
                 {
-                    Debug.Log("Hit an object with explosion " + hit.transform.name);
                     enemy.TakeDamage(explosionDamage);
                 }
             }

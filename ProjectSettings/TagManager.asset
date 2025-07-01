@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Anchor
   - PistolAmmo
+  - Gun
   layers:
   - Default
   - TransparentFX
