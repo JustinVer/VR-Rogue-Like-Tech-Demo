@@ -29,5 +29,4 @@ public class Holster : MonoBehaviour
             item.transform.position = holsterSocket.attachTransform.position;
         }
     }
-
 }
