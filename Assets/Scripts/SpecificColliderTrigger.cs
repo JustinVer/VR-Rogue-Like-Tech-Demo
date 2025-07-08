@@ -13,12 +13,10 @@ public class SpecificColliderTrigger : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("collision Entered");
         foreach (ContactPoint contact in collision.contacts)
         {
             if (contact.thisCollider == targetCollider)
             {
-                Debug.Log("Specific collider found");
                 onSpecificCollision?.Invoke(collision);
                 break; // Exit early — we found the correct collider
             }
@@ -27,13 +25,11 @@ public class SpecificColliderTrigger : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-        Debug.Log("collision exited");
         foreach (ContactPoint contact in collision.contacts)
         {
             Debug.Log(contact.thisCollider + " " + contact.otherCollider + " " + targetCollider);
             if (contact.thisCollider == targetCollider)
             {
-                Debug.Log("Specific exit found");
                 onSpecificExit?.Invoke(collision);
                 break; // Exit early — we found the correct collider
             }

@@ -5,7 +5,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
-public class CrossbowShooter : MonoBehaviour
+public class CrossbowShooter : Holsterable
 {
     public GameObject projectilePrefab;
     public Transform muzzlePoint;
@@ -46,39 +46,46 @@ public class CrossbowShooter : MonoBehaviour
 
     void OnGrab(SelectEnterEventArgs args)
     {
-        isHeld = true;
-        foreach (Collider c in gunCollider)
+        if (args.interactorObject.transform.gameObject.layer == 8)
         {
-            c.enabled = false;
-        }
-        sliderInteractable.enabled = true;
-        magCollider.enabled = true;
-        if (currentMag != null)
-        {
-            currentMag.turnOnColliders();
-            currentMag.turnOnInteraction();
+            isHeld = true;
+            foreach (Collider c in gunCollider)
+            {
+                c.enabled = false;
+            }
+            sliderInteractable.enabled = true;
+            magCollider.enabled = true;
+            if (currentMag != null)
+            {
+                currentMag.turnOnColliders();
+                currentMag.turnOnInteraction();
+            }
         }
 
     }
 
     void OnRelease(SelectExitEventArgs args)
     {
-        isHeld = false;
-        foreach (Collider c in gunCollider)
+        if (args.interactorObject.transform.gameObject.layer == 8)
         {
-            c.enabled = true;
-        }
-        sliderInteractable.enabled = false;
-        magCollider.enabled = false;
-        if (currentMag != null)
-        {
-            currentMag.turnOffColliders();
-            currentMag.turnOffInteraction();
+            isHeld = false;
+            foreach (Collider c in gunCollider)
+            {
+                c.enabled = true;
+            }
+            sliderInteractable.enabled = false;
+            magCollider.enabled = false;
+            if (currentMag != null)
+            {
+                currentMag.turnOffColliders();
+                currentMag.turnOffInteraction();
+            }
         }
     }
 
-    void Update()
+    protected override void Update()
     {
+        base.Update();
         timeSinceShot += Time.deltaTime;
     }
 

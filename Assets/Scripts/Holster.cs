@@ -6,7 +6,7 @@ public class Holster : MonoBehaviour
 {
     Holsterable holsteredItem;
     [SerializeField] XRSocketInteractor holsterSocket;
-    [SerializeField] float moveSpeed = 5f;
+    [SerializeField] float moveSpeed = 0.5f;
     private Coroutine moveRoutine;
 
     public void weaponHolstered()
@@ -39,14 +39,14 @@ public class Holster : MonoBehaviour
             if (moveRoutine != null)
                 StopCoroutine(moveRoutine);
 
-            moveRoutine = StartCoroutine(MoveToHolster(item.gameObject));
+            moveRoutine = StartCoroutine(MoveToHolster(item));
         }
     }
 
-    private IEnumerator MoveToHolster(GameObject item)
+    private IEnumerator MoveToHolster(Holsterable item)
     {
         float elapsed = 0f;
-        Vector3 startPos = item.transform.position;
+        Vector3 startPos = item.grabPosition.position;
         Quaternion startRot = item.transform.rotation;
 
         Rigidbody rb = item.GetComponent<Rigidbody>();
@@ -66,7 +66,7 @@ public class Holster : MonoBehaviour
             Vector3 targetPos = holsterSocket.transform.position;
             Quaternion targetRot = holsterSocket.transform.rotation;
 
-            item.transform.position = Vector3.Lerp(startPos, targetPos, t);
+            item.transform.position = Vector3.Lerp(startPos, targetPos, t) + (item.transform.position - item.grabPosition.position);
             item.transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
 
             yield return new WaitForEndOfFrame();
@@ -78,21 +78,8 @@ public class Holster : MonoBehaviour
         }
 
         // Snap to final position/rotation to finish
-        item.transform.position = holsterSocket.transform.position;
+        item.transform.position = holsterSocket.transform.position + (item.transform.position - item.grabPosition.position);
         item.transform.rotation = holsterSocket.transform.rotation;
         holsteredItem.resetGroundTimer();
-
-
-    }
-
-    public void ReholsterObject(GameObject item)
-    {
-        if (item == holsteredItem.gameObject)
-        {
-            if (moveRoutine != null)
-                StopCoroutine(moveRoutine);
-
-            moveRoutine = StartCoroutine(MoveToHolster(item));
-        }
     }
 }

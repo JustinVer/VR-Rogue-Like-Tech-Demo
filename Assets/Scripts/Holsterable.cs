@@ -9,10 +9,9 @@ public class Holsterable : MonoBehaviour
     private float groundTouchedTime = 0f;
 
     [SerializeField] private bool hasCollider = false;
+    public Transform grabPosition;
 
-    [SerializeField] private GameObject topObject;
-
-    private void Update()
+    protected virtual void Update()
     {
         if (groundTouchedTime > 0)
         {
@@ -22,7 +21,7 @@ public class Holsterable : MonoBehaviour
                 if (holster != null)
                 {
                     resetGroundTimer();
-                    holster.ReholsterObject(topObject);
+                    holster.Reholster(this);
                 }
             }
         }
@@ -30,14 +29,17 @@ public class Holsterable : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.layer == 3 || collision.gameObject.layer == 0)
+        if (hasCollider)
         {
-            groundTouchedTime = 0;
-            groundTouchedTime += Time.deltaTime;
-            if (groundTouchedTime >= groundDisapearTime)
-            {
-                Destroy(this.gameObject);
-            }
+            CollisionInvoke(collision);
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (hasCollider)
+        {
+            CollisionExitInvoke(collision);
         }
     }
 
@@ -56,7 +58,7 @@ public class Holsterable : MonoBehaviour
 
     public void CollisionExitInvoke(Collision collision)
     {
-        groundTouchedTime = 0;
+        resetGroundTimer();
     }
 
     public void resetGroundTimer()
