@@ -9,7 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1367866214315288661}
+  - component: {fileID: 7841551496271390133}
   - component: {fileID: 4223986907655295759}
+  - component: {fileID: 1386501921393607134}
   m_Layer: 0
   m_Name: Collider
   m_TagString: Untagged
@@ -32,6 +34,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 661490488964630536}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &7841551496271390133
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 208444555659932248}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!65 &4223986907655295759
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -48,11 +77,26 @@ BoxCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.023027718, y: 0.13931656, z: 0.22681034}
   m_Center: {x: 0, y: 0.041808724, z: 0.076141655}
+--- !u!114 &1386501921393607134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 208444555659932248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 975127ae1ad09cd4e8a80dc7c7dae226, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundDisapearTime: 0
+  hasCollider: 1
+  topObject: {fileID: 4049262272867246835}
 --- !u!1 &545709662111615581
 GameObject:
   m_ObjectHideFlags: 0
@@ -698,7 +742,7 @@ MonoBehaviour:
   - {fileID: 7492566780275881212}
   - {fileID: 6644695732588534229}
   m_InteractionLayers:
-    m_Bits: 1
+    m_Bits: 67108865
   m_DistanceCalculationMode: 1
   m_SelectMode: 0
   m_FocusMode: 1

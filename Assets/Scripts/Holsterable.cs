@@ -10,6 +10,8 @@ public class Holsterable : MonoBehaviour
 
     [SerializeField] private bool hasCollider = false;
 
+    [SerializeField] private GameObject topObject;
+
     private void Update()
     {
         if (groundTouchedTime > 0)
@@ -19,27 +21,18 @@ public class Holsterable : MonoBehaviour
             {
                 if (holster != null)
                 {
-                    holster.Reholster(this);
+                    resetGroundTimer();
+                    holster.ReholsterObject(topObject);
                 }
             }
         }
     }
+
     private void OnCollisionEnter(Collision collision)
     {
-        if (hasCollider && (collision.gameObject.layer == 3 || collision.gameObject.layer == 0))
-        {
-            groundTouchedTime += Time.deltaTime;
-            if (groundTouchedTime >= groundDisapearTime)
-            {
-                Destroy(this.gameObject);
-            }
-        }
-    }
-    public void CollisionInvoke(Collision collision)
-    {
-        Debug.Log("Holster collision " + collision.gameObject.name);
         if (collision.gameObject.layer == 3 || collision.gameObject.layer == 0)
         {
+            groundTouchedTime = 0;
             groundTouchedTime += Time.deltaTime;
             if (groundTouchedTime >= groundDisapearTime)
             {
@@ -47,5 +40,28 @@ public class Holsterable : MonoBehaviour
             }
         }
     }
-    
+
+    public void CollisionInvoke(Collision collision)
+    {
+        if (collision.gameObject.layer == 3 || collision.gameObject.layer == 0)
+        {
+            groundTouchedTime = 0;
+            groundTouchedTime += Time.deltaTime;
+            if (groundTouchedTime >= groundDisapearTime)
+            {
+                Destroy(this.gameObject);
+            }
+        }
+    }
+
+    public void CollisionExitInvoke(Collision collision)
+    {
+        groundTouchedTime = 0;
+    }
+
+    public void resetGroundTimer()
+    {
+        groundTouchedTime = 0;
+    }
+
 }

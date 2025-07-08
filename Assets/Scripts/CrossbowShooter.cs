@@ -5,7 +5,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
-public class CrossbowShooter : Holsterable
+public class CrossbowShooter : MonoBehaviour
 {
     public GameObject projectilePrefab;
     public Transform muzzlePoint;
