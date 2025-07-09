@@ -5,11 +5,12 @@ using UnityEngine;
 
 public class LevelGenerationManager : MonoBehaviour
 {
-    public int minRoomSize = 10;
-    public int maxRoomSize = 80;
-    public float minEnemyPercentage = 0.02f;
-    public float maxEnemyPercentage = 0.4f;
-    public GameObject floorPrefab;
+    public int minRoomSize = 60;
+    public int maxRoomSize = 300;
+    public float minEnemyPercentage = 0.01f;
+    public float maxEnemyPercentage = 0.22f;
+    public GameObject floorPrefab1;
+    public GameObject floorPrefab2;
     public GameObject wallPrefab;
     public List<EnemyData> enemyTypes;
     public NavMeshSurface[] navMeshSurface;
@@ -52,14 +53,15 @@ public class LevelGenerationManager : MonoBehaviour
 
     private int[][] getNewFloor(int roomSize)
     {
-        int squareLength = (int)(Mathf.Sqrt(roomSize) + 3);
+        int squareLength = (int)(Mathf.Sqrt(roomSize) + 5);
+        Debug.Log("Square length " + squareLength + " " + roomSize);
         int[][] layout = new int[squareLength][];
         for (int i = 0; i < squareLength; i++)
         {
             layout[i] = new int[squareLength];
         }
 
-        Vector2Int bottomCenter = new Vector2Int(squareLength / 2, 1);
+        Vector2Int bottomCenter = new Vector2Int(squareLength / 2, 0);
 
         // Reserve 2x2 starting area at bottom center
         layout[bottomCenter.x][bottomCenter.y] = 1;
@@ -71,43 +73,50 @@ public class LevelGenerationManager : MonoBehaviour
         Queue<Vector2Int> toCheck = new Queue<Vector2Int>();
         HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
 
-        toCheck.Enqueue(bottomCenter);
-        visited.Add(bottomCenter);
-
-        Vector2Int[] directions = new Vector2Int[]
+        while (tilesPlaced < roomSize)
         {
-            Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
-        };
+            toCheck.Enqueue(bottomCenter);
+            visited.Add(bottomCenter);
 
-        while (tilesPlaced < roomSize && toCheck.Count > 0)
-        {
-            Vector2Int current = toCheck.Dequeue();
-
-            foreach (var dir in directions)
+            Vector2Int[] directions = new Vector2Int[]
             {
-                Vector2Int neighbor = current + dir;
-                if (neighbor.x < 0 || neighbor.y < 0 || neighbor.x >= squareLength || neighbor.y >= squareLength)
-                    continue;
-                if (visited.Contains(neighbor)) continue;
+            Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
+            };
 
-                int neighborConnections = 0;
-                foreach (var d in directions)
+            while (tilesPlaced < roomSize && toCheck.Count > 0)
+            {
+                Vector2Int current = toCheck.Dequeue();
+
+                int offset = Random.Range(0, directions.Length);
+                for (int i = 0; i < directions.Length; i++)
                 {
-                    Vector2Int check = neighbor + d;
-                    if (check.x >= 0 && check.y >= 0 && check.x < squareLength && check.y < squareLength)
+                    Vector2Int neighbor = current + (directions[(i + offset) % 4]);
+                    if (neighbor.x < 0 || neighbor.y < 0 || neighbor.x >= squareLength || neighbor.y >= squareLength)
+                        continue;
+                    if (visited.Contains(neighbor)) continue;
+
+                    int neighborConnections = 0;
+                    foreach (var d in directions)
                     {
-                        if (layout[check.x][check.y] == 1) neighborConnections++;
+                        Vector2Int check = neighbor + d;
+                        if (check.x >= 0 && check.y >= 0 && check.x < squareLength && check.y < squareLength)
+                        {
+                            if (layout[check.x][check.y] == 1) neighborConnections++;
+                        }
                     }
-                }
 
-                float connectionBias = 0.4f + 0.25f * neighborConnections;
-                if (Random.value < connectionBias)
-                {
-                    layout[neighbor.x][neighbor.y] = 1;
-                    tilesPlaced++;
-                    toCheck.Enqueue(neighbor);
+                    float connectionBias = 0.3f + 0.3f * neighborConnections;
+                    if (Random.value < connectionBias)
+                    {
+                        if (layout[neighbor.x][neighbor.y] == 0)
+                        {
+                            layout[neighbor.x][neighbor.y] = 1;
+                            tilesPlaced++;
+                        }
+                        toCheck.Enqueue(neighbor);
+                    }
+                    visited.Add(neighbor);
                 }
-                visited.Add(neighbor);
             }
         }
 
@@ -126,7 +135,14 @@ public class LevelGenerationManager : MonoBehaviour
                 if (layout[x][y] == 1)
                 {
                     Vector3 spawnPos = origin + new Vector3(x * TILE_SIZE, 0, y * TILE_SIZE);
-                    Instantiate(floorPrefab, spawnPos, Quaternion.identity, roomParent.transform);
+                    if ((x + y) % 2 == 0)
+                    {
+                        Instantiate(floorPrefab1, spawnPos, Quaternion.identity, roomParent.transform);
+                    }
+                    else
+                    {
+                        Instantiate(floorPrefab2, spawnPos, Quaternion.identity, roomParent.transform);
+                    }
                 }
             }
         }
@@ -181,7 +197,7 @@ public class LevelGenerationManager : MonoBehaviour
     {
         int rows = layout.Length;
         int cols = layout[0].Length;
-        int maxEnemies = (int)(roomSize * (((Random.value * (1 - minEnemyPercentage)) * (maxEnemyPercentage - minEnemyPercentage)) + minEnemyPercentage)) + 1;
+        int maxEnemies = (int)(roomSize * (((Random.value * (1 - minEnemyPercentage)) * (maxEnemyPercentage - minEnemyPercentage)) + minEnemyPercentage));
         int tries = 0;
         int spawned = 0;
         System.Random rng = new System.Random();
