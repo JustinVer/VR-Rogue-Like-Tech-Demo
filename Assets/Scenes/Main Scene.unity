@@ -318,6 +318,77 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90194b072a303c149be2fc23c56cec83, type: 3}
+--- !u!1 &170622318
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 170622320}
+  - component: {fileID: 170622319}
+  m_Layer: 0
+  m_Name: levelgeneratorManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &170622319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 170622318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fc38d3bdf612e44eb76d3e8686b053b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minRoomSize: 60
+  maxRoomSize: 300
+  minEnemyPercentage: 0.02
+  maxEnemyPercentage: 0.25
+  floorPrefab1: {fileID: 4500182590525042551, guid: bad351c878112904cbbc404a34243224, type: 3}
+  floorPrefab2: {fileID: 8772164617101858029, guid: fa306266e6d7b2d47a760ef1081bdf80, type: 3}
+  wallPrefab: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
+  enemyTypes:
+  - prefab: {fileID: 1873796049094065829, guid: 90194b072a303c149be2fc23c56cec83, type: 3}
+    tileWidth: 1
+    tileHeight: 1
+  - prefab: {fileID: 1873796049094065829, guid: f325457c2b418e343a4c21d54a2fc16b, type: 3}
+    tileWidth: 1
+    tileHeight: 1
+  - prefab: {fileID: 1873796049094065829, guid: 899585439b1dea14282fa42d67eb11d1, type: 3}
+    tileWidth: 2
+    tileHeight: 1
+  - prefab: {fileID: 1873796049094065829, guid: a509a5ba1e4982a418f493b9a98b5dbb, type: 3}
+    tileWidth: 2
+    tileHeight: 2
+  navMeshSurface:
+  - {fileID: 488089159}
+  - {fileID: 488089162}
+  - {fileID: 488089161}
+  - {fileID: 488089160}
+  spawnPositions:
+  - {x: 0, y: 0, z: 0}
+--- !u!4 &170622320
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 170622318}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.3157738, y: 53.90723, z: 14.62921}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &189768703
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -329,6 +400,10 @@ PrefabInstance:
     - target: {fileID: 1794441955, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
       propertyPath: m_Name
       value: WinterTreePineTall (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1794441955, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1794441958, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
       propertyPath: m_LocalPosition.x
@@ -392,6 +467,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WinterTreePineTall (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 1794441955, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1794441958, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
       propertyPath: m_LocalPosition.x
       value: -6.2
@@ -449,6 +528,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WinterTreePineTall (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1794441955, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1794441958, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.32
@@ -505,6 +588,10 @@ PrefabInstance:
     - target: {fileID: 445424024740845996, guid: d45e0d96dfe73c145b5cbc18a2e41084, type: 3}
       propertyPath: m_Name
       value: WinterCrate_MD
+      objectReference: {fileID: 0}
+    - target: {fileID: 445424024740845996, guid: d45e0d96dfe73c145b5cbc18a2e41084, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6423813165118098903, guid: d45e0d96dfe73c145b5cbc18a2e41084, type: 3}
       propertyPath: m_LocalPosition.x
@@ -742,6 +829,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WinterGroundRock
       objectReference: {fileID: 0}
+    - target: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6503769927826279851, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4
@@ -798,6 +889,10 @@ PrefabInstance:
     - target: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
       propertyPath: m_Name
       value: WinterGroundRock (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6503769927826279851, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -860,6 +955,10 @@ PrefabInstance:
     - target: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
       propertyPath: m_Name
       value: WinterGroundRock (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6503769927826279851, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -989,6 +1088,10 @@ PrefabInstance:
     - target: {fileID: 1794441955, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
       propertyPath: m_Name
       value: WinterTreePineTall
+      objectReference: {fileID: 0}
+    - target: {fileID: 1794441955, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1794441958, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1307,6 +1410,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8834068657377382934, guid: 86e0156a3a278ee47a880dc38ce3d0a1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1323,6 +1430,10 @@ PrefabInstance:
     - target: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
       propertyPath: m_Name
       value: WinterGroundRock (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6503769927826279851, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1396,6 +1507,10 @@ PrefabInstance:
     - target: {fileID: 3755526508172042337, guid: 2d26338133b249f49be87560995ad5c1, type: 3}
       propertyPath: m_Layer
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3755526508172042337, guid: 2d26338133b249f49be87560995ad5c1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4233212438089318586, guid: 2d26338133b249f49be87560995ad5c1, type: 3}
       propertyPath: m_Layer
@@ -1488,6 +1603,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WinterTreePineTall (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 1794441955, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1794441958, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
       propertyPath: m_LocalPosition.x
       value: -6.73
@@ -1549,6 +1668,10 @@ PrefabInstance:
     - target: {fileID: 1794441955, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
       propertyPath: m_Name
       value: WinterTreePineTall (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1794441955, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1794441958, guid: b29d3985dd86f1442be771350adae0ec, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1882,6 +2005,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8834068657377382934, guid: 86e0156a3a278ee47a880dc38ce3d0a1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1984,6 +2111,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8834068657377382934, guid: 86e0156a3a278ee47a880dc38ce3d0a1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2000,6 +2131,10 @@ PrefabInstance:
     - target: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
       propertyPath: m_Name
       value: WinterGroundRock (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6503769927826279851, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2068,6 +2203,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WinterGroundRock (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6503769927826279851, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4
@@ -2125,6 +2264,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WinterTreePineShort (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 195502824, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 195502827, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
       propertyPath: m_LocalPosition.x
       value: -6.04
@@ -2181,6 +2324,10 @@ PrefabInstance:
     - target: {fileID: 195502824, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
       propertyPath: m_Name
       value: WinterTreePineShort (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 195502824, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 195502827, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2319,6 +2466,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8834068657377382934, guid: 86e0156a3a278ee47a880dc38ce3d0a1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2402,6 +2553,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WinterTreePineShort (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 195502824, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 195502827, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7.81
@@ -2479,6 +2634,10 @@ PrefabInstance:
     - target: {fileID: 3755526508172042337, guid: 2d26338133b249f49be87560995ad5c1, type: 3}
       propertyPath: m_Layer
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3755526508172042337, guid: 2d26338133b249f49be87560995ad5c1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4233212438089318586, guid: 2d26338133b249f49be87560995ad5c1, type: 3}
       propertyPath: m_Layer
@@ -2637,6 +2796,10 @@ PrefabInstance:
     - target: {fileID: 3755526508172042337, guid: 2d26338133b249f49be87560995ad5c1, type: 3}
       propertyPath: m_Layer
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3755526508172042337, guid: 2d26338133b249f49be87560995ad5c1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4233212438089318586, guid: 2d26338133b249f49be87560995ad5c1, type: 3}
       propertyPath: m_Layer
@@ -2799,6 +2962,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8834068657377382934, guid: 86e0156a3a278ee47a880dc38ce3d0a1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2815,6 +2982,10 @@ PrefabInstance:
     - target: {fileID: 195502824, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
       propertyPath: m_Name
       value: WinterTreePineShort (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 195502824, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 195502827, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2872,6 +3043,10 @@ PrefabInstance:
     - target: {fileID: 195502824, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
       propertyPath: m_Name
       value: WinterTreePineShort
+      objectReference: {fileID: 0}
+    - target: {fileID: 195502824, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 195502827, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2942,7 +3117,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundDisapearTime: 2
   hasCollider: 0
-  topObject: {fileID: 241339937}
+  grabPosition: {fileID: 0}
 --- !u!114 &1764733795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3002,6 +3177,10 @@ PrefabInstance:
     - target: {fileID: 195502824, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
       propertyPath: m_Name
       value: WinterTreePineShort (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 195502824, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 195502827, guid: f25296341a878fe45b97887a7fd49adf, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3069,6 +3248,10 @@ PrefabInstance:
     - target: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
       propertyPath: m_Name
       value: WinterGroundRock (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6503769927826279851, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3147,6 +3330,10 @@ PrefabInstance:
     - target: {fileID: 3755526508172042337, guid: 2d26338133b249f49be87560995ad5c1, type: 3}
       propertyPath: m_Layer
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3755526508172042337, guid: 2d26338133b249f49be87560995ad5c1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4233212438089318586, guid: 2d26338133b249f49be87560995ad5c1, type: 3}
       propertyPath: m_Layer
@@ -3545,3 +3732,4 @@ SceneRoots:
   - {fileID: 1240326557}
   - {fileID: 2038073874}
   - {fileID: 123988850}
+  - {fileID: 170622320}

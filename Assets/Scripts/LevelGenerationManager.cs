@@ -14,15 +14,17 @@ public class LevelGenerationManager : MonoBehaviour
     public GameObject wallPrefab;
     public List<EnemyData> enemyTypes;
     public NavMeshSurface[] navMeshSurface;
+    public Vector3[] spawnPositions;
 
     private GameObject roomParent;
     private const int TILE_SIZE = 2;
 
     private void Start()
     {
-        GenerateARoom(new Vector3(0, 50, 5), this.transform.rotation);
-        GenerateARoom(new Vector3(30, 50, 50), this.transform.rotation);
-        GenerateARoom(new Vector3(60, 50, 50), this.transform.rotation);
+        foreach (Vector3 position in spawnPositions)
+        {
+            GenerateARoom(position, this.transform.rotation);
+        }
     }
     public void GenerateARoom(Vector3 position, Quaternion rotation)
     {
