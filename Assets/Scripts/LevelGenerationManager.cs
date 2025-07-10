@@ -9,9 +9,14 @@ public class LevelGenerationManager : MonoBehaviour
     public int maxRoomSize = 300;
     public float minEnemyPercentage = 0.01f;
     public float maxEnemyPercentage = 0.22f;
+
     public GameObject floorPrefab1;
     public GameObject floorPrefab2;
     public GameObject wallPrefab;
+    public GameObject doorPrefab;
+    public GameObject hallwayFloorPrefab;
+    public GameObject lootChestPrefab;
+
     public List<EnemyData> enemyTypes;
     public NavMeshSurface[] navMeshSurface;
     public Vector3[] spawnPositions;
@@ -30,7 +35,7 @@ public class LevelGenerationManager : MonoBehaviour
         for (int i = 0; i < spawnPositions.Length && i < spawnRotations.Length; i++)
         {
             GenerateARoom(spawnPositions[i], spawnRotations[i]);
-            yield return null; // Wait one frame between rooms
+            yield return null;
         }
     }
 
@@ -42,81 +47,83 @@ public class LevelGenerationManager : MonoBehaviour
 
         int roomSize = Random.Range(minRoomSize, maxRoomSize);
         (int[][] layout, Vector2Int anchor) = GetNewFloor(roomSize);
-        GenerateFloor(layout, position, anchor);
-        StartCoroutine(BuildNavMeshAndSpawn(layout, roomSize, position, anchor));
+
+        // STEP 1: Floor
+        GenerateFloor(layout, anchor);
+
+        // STEP 2: Doors & Hallways before any walls or obstacles exist
+        SpawnDoors(layout, anchor);
+
+        // STEP 5: Walls AFTER all physics-based things are placed
+        BuildWallsAround(layout, anchor);
+
+        // STEP 4: Loot
+        SpawnLootChests(layout, anchor);
+
+        // STEP 6: Bake navmesh
+        StartCoroutine(BuildNavMesh());
+
+        // STEP 3: Enemies
+        SpawnEnemies(layout, roomSize, anchor);
+
     }
 
-    private IEnumerator BuildNavMeshAndSpawn(int[][] layout, int roomSize, Vector3 origin, Vector2Int anchor)
+    private IEnumerator BuildNavMesh()
     {
         yield return null;
         if (navMeshSurface != null)
         {
             foreach (NavMeshSurface navMesh in navMeshSurface)
-            {
                 navMesh.BuildNavMesh();
-            }
         }
-        SpawnEnemies(layout, roomSize, origin, anchor);
     }
 
     private (int[][], Vector2Int) GetNewFloor(int roomSize)
     {
-        int squareLength = (int)(Mathf.Sqrt(roomSize) + 5);
-        int[][] layout = new int[squareLength][];
-        for (int i = 0; i < squareLength; i++)
-        {
-            layout[i] = new int[squareLength];
-        }
+        int size = (int)(Mathf.Sqrt(roomSize) + 5);
+        int[][] layout = new int[size][];
+        for (int i = 0; i < size; i++) layout[i] = new int[size];
 
-        // Anchor is bottom-center (where hallway meets room)
-        Vector2Int anchor = new Vector2Int(squareLength / 2 - 1, 0);
-
-        // Reserve 2x2 entrance area at anchor
+        Vector2Int anchor = new Vector2Int(size / 2 - 1, 0);
         layout[anchor.x][anchor.y] = 1;
         layout[anchor.x + 1][anchor.y] = 1;
         layout[anchor.x][anchor.y + 1] = 1;
         layout[anchor.x + 1][anchor.y + 1] = 1;
 
         int tilesPlaced = 4;
-        Queue<Vector2Int> toCheck = new Queue<Vector2Int>();
-        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
-
+        Queue<Vector2Int> toCheck = new();
+        HashSet<Vector2Int> visited = new();
         toCheck.Enqueue(anchor);
         visited.Add(anchor);
 
-        Vector2Int[] directions = new Vector2Int[]
-        {
-            Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
-        };
-
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
         int attempts = 0;
+
         while (tilesPlaced < roomSize && attempts < 500)
         {
             attempts++;
             Vector2Int current = toCheck.Dequeue();
-
             int offset = Random.Range(0, directions.Length);
+
             for (int i = 0; i < directions.Length; i++)
             {
                 Vector2Int dir = directions[(i + offset) % 4];
                 Vector2Int neighbor = current + dir;
 
-                if (neighbor.x < 0 || neighbor.y < 0 || neighbor.x >= squareLength || neighbor.y >= squareLength)
+                if (neighbor.x < 0 || neighbor.y < 0 || neighbor.x >= size || neighbor.y >= size)
                     continue;
 
                 if (visited.Contains(neighbor)) continue;
 
-                int neighborConnections = 0;
+                int connections = 0;
                 foreach (var d in directions)
                 {
                     Vector2Int check = neighbor + d;
-                    if (check.x >= 0 && check.y >= 0 && check.x < squareLength && check.y < squareLength)
-                    {
-                        if (layout[check.x][check.y] == 1) neighborConnections++;
-                    }
+                    if (check.x >= 0 && check.y >= 0 && check.x < size && check.y < size)
+                        if (layout[check.x][check.y] == 1) connections++;
                 }
 
-                float connectionBias = 0.3f + 0.3f * neighborConnections;
+                float connectionBias = 0.3f + 0.3f * connections;
                 if (Random.value < connectionBias)
                 {
                     if (layout[neighbor.x][neighbor.y] == 0)
@@ -129,47 +136,104 @@ public class LevelGenerationManager : MonoBehaviour
                 visited.Add(neighbor);
             }
 
-            if (toCheck.Count == 0) toCheck.Enqueue(anchor); // restart if stuck
+            if (toCheck.Count == 0) toCheck.Enqueue(anchor);
         }
 
         return (layout, anchor);
     }
 
-    private void GenerateFloor(int[][] layout, Vector3 origin, Vector2Int anchor)
+    private void GenerateFloor(int[][] layout, Vector2Int anchor)
     {
-        int rows = layout.Length;
-        int cols = layout[0].Length;
-
-        for (int x = 0; x < rows; x++)
+        for (int x = 0; x < layout.Length; x++)
         {
-            for (int y = 0; y < cols; y++)
+            for (int y = 0; y < layout[0].Length; y++)
             {
                 if (layout[x][y] == 1)
                 {
-                    Vector3 spawnPos = origin + GetRotatedOffset(roomParent.transform, x, y, anchor);
-                    if (IsPositionBlocked(spawnPos)) continue;
-
+                    Vector3 localPos = GetLocalOffset(x, y, anchor);
+                    Vector3 worldPos = roomParent.transform.TransformPoint(localPos);
                     GameObject prefab = (x + y) % 2 == 0 ? floorPrefab1 : floorPrefab2;
-                    Instantiate(prefab, spawnPos, Quaternion.identity, roomParent.transform);
+                    Instantiate(prefab, worldPos, Quaternion.identity, roomParent.transform);
                 }
             }
         }
-
-        BuildWallsAround(layout, origin, anchor);
     }
 
-    private void BuildWallsAround(int[][] layout, Vector3 origin, Vector2Int anchor)
+    private void SpawnEnemies(int[][] layout, int roomSize, Vector2Int anchor)
     {
-        int rows = layout.Length;
-        int cols = layout[0].Length;
-        Vector2Int[] directions = new Vector2Int[]
-        {
-            Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
-        };
+        int maxEnemies = (int)(roomSize * Mathf.Lerp(minEnemyPercentage, maxEnemyPercentage, Random.value));
+        int spawned = 0;
+        int tries = 0;
+        System.Random rng = new();
 
-        for (int x = 0; x < rows; x++)
+        while (spawned < maxEnemies && tries < maxEnemies * 10)
         {
-            for (int y = 0; y < cols; y++)
+
+            EnemyData enemy = enemyTypes[rng.Next(enemyTypes.Count)];
+            int x = rng.Next(layout.Length - enemy.tileWidth);
+            int y = rng.Next(layout[0].Length - enemy.tileHeight);
+            bool canPlace = true;
+
+            for (int i = 0; i < enemy.tileWidth && canPlace; i++)
+                for (int j = 0; j < enemy.tileHeight; j++)
+                    if (layout[x + i][y + j] != 1) canPlace = false;
+
+            Debug.Log("tried placing an emeny " + canPlace);
+            if (canPlace)
+            {
+                Vector3 localPos = GetLocalOffset(x + enemy.tileWidth / 2, y + enemy.tileHeight / 2, anchor);
+                Vector3 worldPos = roomParent.transform.TransformPoint(localPos);
+                Debug.Log("world position: " + worldPos);
+                if (!IsPositionBlocked(worldPos + new Vector3(0, 2, 0)))
+                {
+                    Debug.Log("position not blocked " + canPlace);
+                    Instantiate(enemy.prefab, worldPos, Quaternion.identity, roomParent.transform);
+                    spawned += enemy.tileWidth * enemy.tileHeight;
+                }
+            }
+
+            tries++;
+        }
+    }
+
+    private void SpawnLootChests(int[][] layout, Vector2Int anchor)
+    {
+        int count = Random.Range(1, 5);
+        int spawned = 0;
+        int tries = 0;
+
+        while (spawned < count && tries < 100)
+        {
+            int x = Random.Range(0, layout.Length);
+            int y = Random.Range(0, layout[0].Length);
+
+            if (layout[x][y] != 1)
+            {
+                tries++;
+                continue;
+            }
+
+            Vector3 localPos = GetLocalOffset(x, y, anchor);
+            Vector3 worldPos = roomParent.transform.TransformPoint(localPos);
+
+            if (!IsPositionBlocked(worldPos + new Vector3(0, 2, 0)))
+            {
+                Instantiate(lootChestPrefab, worldPos, Quaternion.identity, roomParent.transform);
+                spawned++;
+            }
+
+            tries++;
+        }
+    }
+
+    private void SpawnDoors(int[][] layout, Vector2Int anchor)
+    {
+        List<(int x, int y, Vector2Int dir)> candidates = new();
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+
+        for (int x = 0; x < layout.Length; x++)
+        {
+            for (int y = 0; y < layout[0].Length; y++)
             {
                 if (layout[x][y] != 1) continue;
 
@@ -177,83 +241,94 @@ public class LevelGenerationManager : MonoBehaviour
                 {
                     int nx = x + dir.x;
                     int ny = y + dir.y;
-                    bool needsWall = nx < 0 || ny < 0 || nx >= rows || ny >= cols || layout[nx][ny] == 0;
 
-                    if (needsWall)
+                    if (nx < 0 || ny < 0 || nx >= layout.Length || ny >= layout[0].Length || layout[nx][ny] == 0)
                     {
-                        for (int h = 0; h < 3; h++)
-                        {
-                            Vector3 wallBase = origin + GetRotatedOffset(roomParent.transform, x + dir.x, y + dir.y, anchor);
-                            Vector3 wallPos = wallBase + roomParent.transform.up * (h * TILE_SIZE);
-                            if (IsPositionBlocked(wallPos)) break;
-
-                            Instantiate(wallPrefab, wallPos, Quaternion.identity, roomParent.transform);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void SpawnEnemies(int[][] layout, int roomSize, Vector3 origin, Vector2Int anchor)
-    {
-        int rows = layout.Length;
-        int cols = layout[0].Length;
-        int maxEnemies = (int)(roomSize * (((Random.value * (1 - minEnemyPercentage)) * (maxEnemyPercentage - minEnemyPercentage)) + minEnemyPercentage));
-        int tries = 0;
-        int spawned = 0;
-        System.Random rng = new System.Random();
-
-        while (spawned < maxEnemies && tries < maxEnemies * 10)
-        {
-            EnemyData enemy = enemyTypes[rng.Next(enemyTypes.Count)];
-            int x = rng.Next(rows - enemy.tileWidth);
-            int y = rng.Next(cols - enemy.tileHeight);
-            bool canPlace = true;
-
-            for (int i = 0; i < enemy.tileWidth; i++)
-            {
-                for (int j = 0; j < enemy.tileHeight; j++)
-                {
-                    if (layout[x + i][y + j] != 1)
-                    {
-                        canPlace = false;
+                        candidates.Add((x, y, dir));
                         break;
                     }
                 }
-                if (!canPlace) break;
             }
+        }
 
-            if (canPlace)
+        int doorCount = Mathf.Min(Random.Range(4, 5), candidates.Count);
+        for (int i = 0; i < doorCount; i++)
+        {
+            var (x, y, dir) = candidates[i];
+            Vector3 localPos = GetLocalOffset(x, y, anchor);
+            Vector3 worldPos = roomParent.transform.TransformPoint(localPos);
+            Quaternion rot = Quaternion.LookRotation(roomParent.transform.TransformDirection(new Vector3(dir.x, 0, dir.y)));
+
+            if (!IsPositionBlocked(worldPos + new Vector3(0, 2, 0)))
             {
-                Vector3 spawnOffset = GetRotatedOffset(roomParent.transform, x + enemy.tileWidth / 2, y + enemy.tileHeight / 2, anchor);
-                Vector3 spawnPos = origin + spawnOffset;
-
-                Instantiate(enemy.prefab, spawnPos, Quaternion.identity, roomParent.transform);
-                spawned += (enemy.tileWidth * enemy.tileHeight);
+                Instantiate(doorPrefab, worldPos, rot, roomParent.transform);
+                BuildHallway(localPos, dir);
             }
-
-            tries++;
         }
     }
 
-    private Vector3 GetRotatedOffset(Transform roomTransform, int x, int y, Vector2Int anchor)
+    private void BuildHallway(Vector3 doorLocalPos, Vector2Int dir)
     {
-        Vector3 anchorOffset =
-            roomTransform.right * (anchor.x * TILE_SIZE) +
-            roomTransform.forward * (anchor.y * TILE_SIZE);
+        for (int d = 1; d <= 3; d++)
+        {
+            for (int dx = 0; dx < 2; dx++)
+            {
+                for (int dz = 0; dz < 2; dz++)
+                {
+                    Vector3 offset = new Vector3(dx, 0, dz) * TILE_SIZE;
+                    Vector3 stepDir = new Vector3(dir.x, 0, dir.y) * TILE_SIZE * d;
+                    Vector3 local = doorLocalPos + stepDir + offset - new Vector3(TILE_SIZE, 0, TILE_SIZE) / 2f;
+                    Vector3 world = roomParent.transform.TransformPoint(local);
 
-        return roomTransform.right * (x * TILE_SIZE) +
-               roomTransform.forward * (y * TILE_SIZE) -
-               anchorOffset;
+                    if (!IsPositionBlocked(world))
+                    {
+                        Instantiate(hallwayFloorPrefab, world, Quaternion.identity, roomParent.transform);
+                    }
+                }
+            }
+        }
     }
 
-    // Checks if the given position is blocked by anything in the physics world
-    private bool IsPositionBlocked(Vector3 position)
+    private void BuildWallsAround(int[][] layout, Vector2Int anchor)
+    {
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+
+        for (int x = 0; x < layout.Length; x++)
+        {
+            for (int y = 0; y < layout[0].Length; y++)
+            {
+                if (layout[x][y] != 1) continue;
+
+                foreach (var dir in directions)
+                {
+                    int nx = x + dir.x;
+                    int ny = y + dir.y;
+                    bool needsWall = nx < 0 || ny < 0 || nx >= layout.Length || ny >= layout[0].Length || layout[nx][ny] == 0;
+                    if (!needsWall) continue;
+
+                    for (int h = 0; h < 3; h++)
+                    {
+                        Vector3 baseLocal = GetLocalOffset(nx, ny, anchor) + Vector3.up * h * TILE_SIZE;
+                        Vector3 wallWorld = roomParent.transform.TransformPoint(baseLocal);
+                        if (IsPositionBlocked(wallWorld)) break;
+
+                        Instantiate(wallPrefab, wallWorld, Quaternion.identity, roomParent.transform);
+                    }
+                }
+            }
+        }
+    }
+
+    private Vector3 GetLocalOffset(int x, int y, Vector2Int anchor)
+    {
+        return new Vector3((x - anchor.x) * TILE_SIZE, 0, (y - anchor.y) * TILE_SIZE);
+    }
+
+    private bool IsPositionBlocked(Vector3 worldPosition)
     {
         float checkSize = TILE_SIZE * 0.45f;
         Vector3 halfExtents = new Vector3(checkSize, checkSize, checkSize);
-        return Physics.CheckBox(position, halfExtents, Quaternion.identity, ~0); // ~0 = all layers
+        return Physics.CheckBox(worldPosition, halfExtents, Quaternion.identity, ~0);
     }
 
     [System.Serializable]
