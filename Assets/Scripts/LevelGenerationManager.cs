@@ -235,47 +235,103 @@ public class LevelGenerationManager : MonoBehaviour
         {
             for (int y = 0; y < layout[0].Length; y++)
             {
-                if (layout[x][y] != 1) continue;
-
                 foreach (var dir in directions)
                 {
-                    int nx = x + dir.x;
-                    int ny = y + dir.y;
+                    Vector2Int perp = new Vector2Int(-dir.y, dir.x); // Perpendicular direction (to make door 2 tiles wide)
+                    int x1 = x;
+                    int y1 = y;
+                    int x2 = x + perp.x;
+                    int y2 = y + perp.y;
 
-                    if (nx < 0 || ny < 0 || nx >= layout.Length || ny >= layout[0].Length || layout[nx][ny] == 0)
-                    {
-                        candidates.Add((x, y, dir));
-                        break;
-                    }
+                    // Bounds check
+                    if (x2 < 0 || y2 < 0 || x2 >= layout.Length || y2 >= layout[0].Length) continue;
+                    if (layout[x1][y1] != 1 || layout[x2][y2] != 1) continue;
+
+                    // In front (hallway side)
+                    int fx1 = x1 + dir.x;
+                    int fy1 = y1 + dir.y;
+                    int fx2 = x2 + dir.x;
+                    int fy2 = y2 + dir.y;
+
+                    bool frontClear =
+                        (fx1 < 0 || fy1 < 0 || fx1 >= layout.Length || fy1 >= layout[0].Length || layout[fx1][fy1] == 0) &&
+                        (fx2 < 0 || fy2 < 0 || fx2 >= layout.Length || fy2 >= layout[0].Length || layout[fx2][fy2] == 0);
+
+                    if (!frontClear) continue;
+
+                    // Behind (must be floor so door opens out of room)
+                    int bx1 = x1 - dir.x;
+                    int by1 = y1 - dir.y;
+                    int bx2 = x2 - dir.x;
+                    int by2 = y2 - dir.y;
+
+                    bool backFloor =
+                        bx1 >= 0 && by1 >= 0 && bx1 < layout.Length && by1 < layout[0].Length &&
+                        bx2 >= 0 && by2 >= 0 && bx2 < layout.Length && by2 < layout[0].Length &&
+                        layout[bx1][by1] == 1 && layout[bx2][by2] == 1;
+
+                    if (!backFloor) continue;
+
+                    candidates.Add((x1, y1, dir));
                 }
             }
         }
 
-        int doorCount = Mathf.Min(Random.Range(4, 5), candidates.Count);
-        for (int i = 0; i < doorCount; i++)
+        Debug.Log("FIXED door candidates: " + candidates.Count);
+
+        System.Random rng = new();
+        for (int i = candidates.Count - 1; i > 0; i--)
         {
-            var (x, y, dir) = candidates[i];
-            Vector3 localPos = GetLocalOffset(x, y, anchor);
-            Vector3 worldPos = roomParent.transform.TransformPoint(localPos);
+            int swap = rng.Next(i + 1);
+            (candidates[i], candidates[swap]) = (candidates[swap], candidates[i]);
+        }
+
+        int doorCount = Mathf.Min(Random.Range(2, 4), candidates.Count);
+        int placed = 0;
+
+        foreach (var (x, y, dir) in candidates)
+        {
+            if (placed >= doorCount) break;
+
+            Vector2Int perp = new Vector2Int(-dir.y, dir.x);
+            Vector3 door1 = GetLocalOffset(x, y, anchor);
+            Vector3 door2 = GetLocalOffset(x + perp.x, y + perp.y, anchor);
+            Vector3 centerLocal = (door1 + door2) / 2f;
+            Vector3 outward = new Vector3(dir.x, 0, dir.y) * (TILE_SIZE / 2f);
+
+            Vector3 localDoorPos = centerLocal + outward;
+            Vector3 worldDoorPos = roomParent.transform.TransformPoint(localDoorPos);
             Quaternion rot = Quaternion.LookRotation(roomParent.transform.TransformDirection(new Vector3(dir.x, 0, dir.y)));
 
-            if (!IsPositionBlocked(worldPos + new Vector3(0, 2, 0)))
+            if (!IsPositionBlocked(worldDoorPos + new Vector3(0, 2, 0)))
             {
-                Instantiate(doorPrefab, worldPos, rot, roomParent.transform);
-                BuildHallway(localPos, dir);
+                Instantiate(doorPrefab, worldDoorPos, rot, roomParent.transform);
+                BuildHallway(localDoorPos, dir);
+                placed++;
             }
         }
     }
 
+
+
+
+
+
     private void BuildHallway(Vector3 doorLocalPos, Vector2Int dir)
     {
-        for (int d = 1; d <= 3; d++)
+        // Hallway starts just outside the wall
+        for (int d = 1; d <= 4; d++) // Slightly longer hall
         {
             for (int dx = 0; dx < 2; dx++)
             {
                 for (int dz = 0; dz < 2; dz++)
                 {
-                    Vector3 offset = new Vector3(dx, 0, dz) * TILE_SIZE;
+                    Vector3 offset = new Vector3(
+                        dir.x == 0 ? dx * TILE_SIZE : 0,
+                        0,
+                        dir.y == 0 ? dz * TILE_SIZE : 0
+                    );
+
                     Vector3 stepDir = new Vector3(dir.x, 0, dir.y) * TILE_SIZE * d;
                     Vector3 local = doorLocalPos + stepDir + offset - new Vector3(TILE_SIZE, 0, TILE_SIZE) / 2f;
                     Vector3 world = roomParent.transform.TransformPoint(local);
