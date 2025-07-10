@@ -13,7 +13,7 @@ public class PlayerHealth : MonoBehaviour, Health
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
-        Debug.Log($"Player took {amount} damage. Current health: {currentHealth}");
+        //Debug.Log($"Player took {amount} damage. Current health: {currentHealth}");
 
         if (currentHealth <= 0)
         {
@@ -23,7 +23,7 @@ public class PlayerHealth : MonoBehaviour, Health
 
     private void Die()
     {
-        Debug.Log("Player has died.");
+        //Debug.Log("Player has died.");
         currentHealth = maxHealth;
         // Add your death logic here (e.g., game over screen, respawn, etc.)
     }

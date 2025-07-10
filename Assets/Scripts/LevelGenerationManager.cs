@@ -178,15 +178,12 @@ public class LevelGenerationManager : MonoBehaviour
                 for (int j = 0; j < enemy.tileHeight; j++)
                     if (layout[x + i][y + j] != 1) canPlace = false;
 
-            Debug.Log("tried placing an emeny " + canPlace);
             if (canPlace)
             {
                 Vector3 localPos = GetLocalOffset(x + enemy.tileWidth / 2, y + enemy.tileHeight / 2, anchor);
                 Vector3 worldPos = roomParent.transform.TransformPoint(localPos);
-                Debug.Log("world position: " + worldPos);
                 if (!IsPositionBlocked(worldPos + new Vector3(0, 2, 0)))
                 {
-                    Debug.Log("position not blocked " + canPlace);
                     Instantiate(enemy.prefab, worldPos, Quaternion.identity, roomParent.transform);
                     spawned += enemy.tileWidth * enemy.tileHeight;
                 }
