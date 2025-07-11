@@ -161,26 +161,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fc38d3bdf612e44eb76d3e8686b053b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _minRoomSize: 60
-  _maxRoomSize: 300
-  _minEnemyPercentage: 0.01
-  _maxEnemyPercentage: 0.3
-  _floorPrefab1: {fileID: 8772164617101858029, guid: fa306266e6d7b2d47a760ef1081bdf80, type: 3}
-  _floorPrefab2: {fileID: 4500182590525042551, guid: bad351c878112904cbbc404a34243224, type: 3}
-  _wallPrefab: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
-  _doorPrefab: {fileID: 1152840198012554778, guid: d3dd7dca23207ea42adaad253f37c12e, type: 3}
-  _hallwayFloorPrefab: {fileID: 361931056623277241, guid: 017654b38a60d604b9bb14fd5ee8bae9, type: 3}
-  _lootChestPrefab: {fileID: 2846202959287830353, guid: 77fad4c36aa1492488a6bcadc342aacb, type: 3}
-  _enemyTypes:
-  - _prefab: {fileID: 1873796049094065829, guid: 90194b072a303c149be2fc23c56cec83, type: 3}
-    _tileWidth: 2
-    _tileHeight: 2
-  _navMeshSurfaces:
+  minRoomSize: 60
+  maxRoomSize: 300
+  minEnemyPercentage: 0.02
+  maxEnemyPercentage: 0.25
+  floorPrefab1: {fileID: 4500182590525042551, guid: bad351c878112904cbbc404a34243224, type: 3}
+  floorPrefab2: {fileID: 8772164617101858029, guid: fa306266e6d7b2d47a760ef1081bdf80, type: 3}
+  wallPrefab: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
+  doorPrefab: {fileID: 1152840198012554778, guid: d3dd7dca23207ea42adaad253f37c12e, type: 3}
+  hallwayFloorPrefab: {fileID: 361931056623277241, guid: 017654b38a60d604b9bb14fd5ee8bae9, type: 3}
+  lootChestPrefab: {fileID: 2846202959287830353, guid: 77fad4c36aa1492488a6bcadc342aacb, type: 3}
+  enemyTypes:
+  - prefab: {fileID: 1873796049094065829, guid: 90194b072a303c149be2fc23c56cec83, type: 3}
+    tileWidth: 1
+    tileHeight: 1
+  - prefab: {fileID: 1873796049094065829, guid: f325457c2b418e343a4c21d54a2fc16b, type: 3}
+    tileWidth: 1
+    tileHeight: 1
+  - prefab: {fileID: 1873796049094065829, guid: 899585439b1dea14282fa42d67eb11d1, type: 3}
+    tileWidth: 2
+    tileHeight: 1
+  - prefab: {fileID: 1873796049094065829, guid: a509a5ba1e4982a418f493b9a98b5dbb, type: 3}
+    tileWidth: 2
+    tileHeight: 2
+  navMeshSurface:
   - {fileID: 488089159}
-  _spawnPositions:
+  - {fileID: 488089162}
+  - {fileID: 488089161}
+  - {fileID: 488089160}
+  spawnPositions:
   - {x: -2, y: -2, z: 4}
-  _spawnRotations:
-  - {x: 0, y: 0, z: 0, w: 0}
+  spawnRotations:
+  - {x: 0, y: 0, z: 0, w: 1}
 --- !u!4 &170622320
 Transform:
   m_ObjectHideFlags: 0
@@ -757,7 +769,7 @@ Transform:
   m_GameObject: {fileID: 488089157}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1947,7 +1959,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalPosition.z
