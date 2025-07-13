@@ -316,23 +316,26 @@ public class LevelGenerationManager : MonoBehaviour
         {
             for (int dx = 0; dx < 2; dx++)
             {
-                for (int dz = 0; dz < 2; dz++)
-                {
-                    Vector3 offset = new Vector3(
-                        dir.x == 0 ? dx * TILE_SIZE : 0,
-                        0,
-                        dir.y == 0 ? dz * TILE_SIZE : 0
-                    );
+                Vector3 offset = new Vector3(
+                    dir.x == 0 ? dx * TILE_SIZE : 0,
+                    0,
+                    dir.y == 0 ? dx * TILE_SIZE : 0
+                );
 
-                    Vector3 stepDir = new Vector3(dir.x, 0, dir.y) * TILE_SIZE * d;
-                    Vector3 local = doorLocalPos + stepDir + offset - new Vector3(TILE_SIZE, 0, TILE_SIZE) / 2f;
-                    Vector3 world = roomParent.transform.TransformPoint(local);
-                    Debug.Log("Local hallway " + local + " " + stepDir + " " + offset);
-                    if (!IsPositionBlocked(world))
+                Vector3 stepDir = new Vector3(dir.x, 0, dir.y) * TILE_SIZE * d;
+                Vector3 local = doorLocalPos + stepDir + offset - new Vector3(TILE_SIZE, 0, TILE_SIZE) / 2f;
+                Vector3 world = roomParent.transform.TransformPoint(local);
+                if (!IsPositionBlocked(world))
+                {
+                    Instantiate(hallwayFloorPrefab, world, Quaternion.identity, roomParent.transform);
+
+                    if ((dx == 1 && (dir.x >= 0.01 || dir.y >= 0.01)) || (dx == 0 && (dir.x <= -0.01 || dir.y <= -0.01)))
                     {
-                        Instantiate(hallwayFloorPrefab, world, Quaternion.identity, roomParent.transform);
-                        Debug.Log("buildWallSegements " + (local + new Vector3(dir.y, 0, dir.x) * TILE_SIZE));
-                        //BuildWallSegement(local + new Vector3(dir.y, 0, dir.x) * TILE_SIZE);
+                        BuildWallSegement(local + new Vector3(dir.y, 0, dir.x) * TILE_SIZE);
+                    }
+                    else
+                    {
+                        BuildWallSegement(local + new Vector3(dir.y * -1, 0, dir.x * -1) * TILE_SIZE);
                     }
                 }
             }
