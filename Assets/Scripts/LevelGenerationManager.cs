@@ -283,7 +283,7 @@ public class LevelGenerationManager : MonoBehaviour
             (candidates[i], candidates[swap]) = (candidates[swap], candidates[i]);
         }
 
-        int doorCount = Mathf.Min(Random.Range(2, 4), candidates.Count);
+        int doorCount = Mathf.Min(Random.Range(1, 2), candidates.Count);
         int placed = 0;
 
         foreach (var (x, y, dir) in candidates)
@@ -309,11 +309,6 @@ public class LevelGenerationManager : MonoBehaviour
         }
     }
 
-
-
-
-
-
     private void BuildHallway(Vector3 doorLocalPos, Vector2Int dir)
     {
         // Hallway starts just outside the wall
@@ -332,10 +327,12 @@ public class LevelGenerationManager : MonoBehaviour
                     Vector3 stepDir = new Vector3(dir.x, 0, dir.y) * TILE_SIZE * d;
                     Vector3 local = doorLocalPos + stepDir + offset - new Vector3(TILE_SIZE, 0, TILE_SIZE) / 2f;
                     Vector3 world = roomParent.transform.TransformPoint(local);
-
+                    Debug.Log("Local hallway " + local + " " + stepDir + " " + offset);
                     if (!IsPositionBlocked(world))
                     {
                         Instantiate(hallwayFloorPrefab, world, Quaternion.identity, roomParent.transform);
+                        Debug.Log("buildWallSegements " + (local + new Vector3(dir.y, 0, dir.x) * TILE_SIZE));
+                        //BuildWallSegement(local + new Vector3(dir.y, 0, dir.x) * TILE_SIZE);
                     }
                 }
             }
@@ -358,17 +355,33 @@ public class LevelGenerationManager : MonoBehaviour
                     int ny = y + dir.y;
                     bool needsWall = nx < 0 || ny < 0 || nx >= layout.Length || ny >= layout[0].Length || layout[nx][ny] == 0;
                     if (!needsWall) continue;
-
-                    for (int h = 0; h < 3; h++)
-                    {
-                        Vector3 baseLocal = GetLocalOffset(nx, ny, anchor) + Vector3.up * h * TILE_SIZE;
-                        Vector3 wallWorld = roomParent.transform.TransformPoint(baseLocal);
-                        if (IsPositionBlocked(wallWorld)) break;
-
-                        Instantiate(wallPrefab, wallWorld, Quaternion.identity, roomParent.transform);
-                    }
+                    BuildWallSegement(anchor, nx, ny);
                 }
             }
+        }
+    }
+
+    private void BuildWallSegement(Vector2Int anchor, int nx, int ny)
+    {
+        for (int h = 0; h < 3; h++)
+        {
+            Vector3 baseLocal = GetLocalOffset(nx, ny, anchor) + Vector3.up * h * TILE_SIZE;
+            Vector3 wallWorld = roomParent.transform.TransformPoint(baseLocal);
+            if (IsPositionBlocked(wallWorld)) break;
+
+            Instantiate(wallPrefab, wallWorld, Quaternion.identity, roomParent.transform);
+        }
+    }
+
+    private void BuildWallSegement(Vector3 localPosition)
+    {
+        for (int h = 0; h < 3; h++)
+        {
+            Vector3 baseLocal = localPosition + Vector3.up * h * TILE_SIZE;
+            Vector3 wallWorld = roomParent.transform.TransformPoint(baseLocal);
+            if (IsPositionBlocked(wallWorld)) break;
+
+            Instantiate(wallPrefab, wallWorld, Quaternion.identity, roomParent.transform);
         }
     }
 
