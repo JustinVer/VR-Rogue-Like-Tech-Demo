@@ -161,7 +161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fc38d3bdf612e44eb76d3e8686b053b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minRoomSize: 60
+  minRoomSize: 75
   maxRoomSize: 300
   minEnemyPercentage: 0.02
   maxEnemyPercentage: 0.25
