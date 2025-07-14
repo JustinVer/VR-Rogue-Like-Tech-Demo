@@ -503,6 +503,12 @@ public class LevelGenerationManager : MonoBehaviour
                     {
                         BuildWallSegement(local + new Vector3(dir.y * -1, 0, dir.x * -1) * TILE_SIZE);
                     }
+
+                    if (d == hallwayLength && dx == 1)
+                    {
+                        Quaternion rot = Quaternion.LookRotation(roomParent.transform.TransformDirection(new Vector3(dir.x, 0, dir.y)));
+                        Instantiate(doorPrefab, world - (offset / 2), rot, roomParent.transform);
+                    }
                 }
             }
         }
