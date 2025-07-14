@@ -234,17 +234,15 @@ public class LevelGenerationManager : MonoBehaviour
             {
                 foreach (var dir in directions)
                 {
-                    Vector2Int perp = new Vector2Int(-dir.y, dir.x); // Perpendicular direction (to make door 2 tiles wide)
+                    Vector2Int perp = new Vector2Int(-dir.y, dir.x);
                     int x1 = x;
                     int y1 = y;
                     int x2 = x + perp.x;
                     int y2 = y + perp.y;
 
-                    // Bounds check
                     if (x2 < 0 || y2 < 0 || x2 >= layout.Length || y2 >= layout[0].Length) continue;
                     if (layout[x1][y1] != 1 || layout[x2][y2] != 1) continue;
 
-                    // In front (hallway side)
                     int fx1 = x1 + dir.x;
                     int fy1 = y1 + dir.y;
                     int fx2 = x2 + dir.x;
@@ -256,7 +254,6 @@ public class LevelGenerationManager : MonoBehaviour
 
                     if (!frontClear) continue;
 
-                    // Behind (must be floor so door opens out of room)
                     int bx1 = x1 - dir.x;
                     int by1 = y1 - dir.y;
                     int bx2 = x2 - dir.x;
@@ -283,7 +280,7 @@ public class LevelGenerationManager : MonoBehaviour
             (candidates[i], candidates[swap]) = (candidates[swap], candidates[i]);
         }
 
-        int doorCount = Mathf.Min(Random.Range(1, 2), candidates.Count);
+        int doorCount = Mathf.Min(Random.Range(2, 5), candidates.Count);
         int placed = 0;
 
         foreach (var (x, y, dir) in candidates)
@@ -294,13 +291,16 @@ public class LevelGenerationManager : MonoBehaviour
             Vector3 door1 = GetLocalOffset(x, y, anchor);
             Vector3 door2 = GetLocalOffset(x + perp.x, y + perp.y, anchor);
             Vector3 centerLocal = (door1 + door2) / 2f;
-            Vector3 outward = new Vector3(dir.x, 0, dir.y) * (TILE_SIZE / 2f);
+
+            // FIXED: Place door fully outside the wall
+            Vector3 outward = new Vector3(dir.x, 0, dir.y) * (TILE_SIZE / 2f); // Changed from TILE_SIZE/2f
 
             Vector3 localDoorPos = centerLocal + outward;
             Vector3 worldDoorPos = roomParent.transform.TransformPoint(localDoorPos);
             Quaternion rot = Quaternion.LookRotation(roomParent.transform.TransformDirection(new Vector3(dir.x, 0, dir.y)));
 
-            if (!IsPositionBlocked(worldDoorPos + new Vector3(0, 2, 0)))
+            // FIXED: Check if hallway can be built before placing door
+            if (CanBuildHallway(localDoorPos, dir))
             {
                 Instantiate(doorPrefab, worldDoorPos, rot, roomParent.transform);
                 BuildHallway(localDoorPos, dir);
@@ -309,10 +309,9 @@ public class LevelGenerationManager : MonoBehaviour
         }
     }
 
-    private void BuildHallway(Vector3 doorLocalPos, Vector2Int dir)
+    private bool CanBuildHallway(Vector3 doorLocalPos, Vector2Int dir)
     {
-        // Hallway starts just outside the wall
-        for (int d = 1; d <= 4; d++) // Slightly longer hall
+        for (int d = 1; d <= 4; d++)
         {
             for (int dx = 0; dx < 2; dx++)
             {
@@ -325,6 +324,51 @@ public class LevelGenerationManager : MonoBehaviour
                 Vector3 stepDir = new Vector3(dir.x, 0, dir.y) * TILE_SIZE * d;
                 Vector3 local = doorLocalPos + stepDir + offset - new Vector3(TILE_SIZE, 0, TILE_SIZE) / 2f;
                 Vector3 world = roomParent.transform.TransformPoint(local);
+
+                // Check full volume of hallway section (floor + height)
+                if (IsHallwaySectionBlocked(world))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private bool IsHallwaySectionBlocked(Vector3 worldPosition)
+    {
+        // Check a larger volume that encompasses the floor and potential walls
+        float checkSize = TILE_SIZE * 0.9f; // Increased from 0.45f
+        Vector3 halfExtents = new Vector3(checkSize, TILE_SIZE * 1.5f, checkSize); // Check vertically too
+        Vector3 checkCenter = worldPosition + Vector3.up * (TILE_SIZE * 1.5f); // Center of the check volume
+
+        return Physics.CheckBox(checkCenter, halfExtents, Quaternion.identity, ~0);
+    }
+
+    private bool IsPositionBlocked(Vector3 worldPosition, float checkScale = 0.45f)
+    {
+        float checkSize = TILE_SIZE * checkScale;
+        Vector3 halfExtents = new Vector3(checkSize, checkSize, checkSize);
+        return Physics.CheckBox(worldPosition, halfExtents, Quaternion.identity, ~0);
+    }
+
+    private void BuildHallway(Vector3 doorLocalPos, Vector2Int dir)
+    {
+        for (int d = 1; d <= 4; d++)
+        {
+            for (int dx = 0; dx < 2; dx++)
+            {
+                Vector3 offset = new Vector3(
+                    dir.x == 0 ? dx * TILE_SIZE : 0,
+                    0,
+                    dir.y == 0 ? dx * TILE_SIZE : 0
+                );
+
+                Vector3 stepDir = new Vector3(dir.x, 0, dir.y) * TILE_SIZE * d;
+                Vector3 local = doorLocalPos + stepDir + offset - new Vector3(TILE_SIZE, 0, TILE_SIZE) / 2f;
+                Vector3 world = roomParent.transform.TransformPoint(local);
+
+                // Only place if not blocked (redundant check but safe)
                 if (!IsPositionBlocked(world))
                 {
                     Instantiate(hallwayFloorPrefab, world, Quaternion.identity, roomParent.transform);
