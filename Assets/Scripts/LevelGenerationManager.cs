@@ -41,32 +41,61 @@ public class LevelGenerationManager : MonoBehaviour
 
     public void GenerateARoom(Vector3 position, Quaternion rotation)
     {
-        roomParent = new GameObject("GeneratedRoom");
-        roomParent.transform.position = position;
-        roomParent.transform.rotation = rotation;
+        const int MAX_REGENERATION_ATTEMPTS = 10;
+        int regenerationAttempt = 0;
+        bool successfulGeneration = false;
 
-        int roomSize = Random.Range(minRoomSize, maxRoomSize);
-        (int[][] layout, Vector2Int anchor) = GetNewFloor(roomSize);
+        while (!successfulGeneration && regenerationAttempt < MAX_REGENERATION_ATTEMPTS)
+        {
+            // Clean up previous attempt if exists
+            if (roomParent != null)
+            {
+                Destroy(roomParent);
+            }
 
-        // STEP 1: Floor
-        GenerateFloor(layout, anchor);
+            roomParent = new GameObject("GeneratedRoom");
+            roomParent.transform.position = position;
+            roomParent.transform.rotation = rotation;
 
-        // STEP 2: Doors & Hallways before any walls or obstacles exist
-        SpawnDoors(layout, anchor);
+            int roomSize = Random.Range(minRoomSize, maxRoomSize);
+            (int[][] layout, Vector2Int anchor) = GetNewFloor(roomSize);
 
-        // STEP 5: Walls AFTER all physics-based things are placed
-        BuildWallsAround(layout, anchor);
+            // STEP 1: Floor
+            GenerateFloor(layout, anchor);
 
-        // STEP 4: Loot
-        SpawnLootChests(layout, anchor);
+            // STEP 2: Doors & Hallways before any walls or obstacles exist
+            int doorsPlaced = SpawnDoors(layout, anchor);
 
-        // STEP 6: Bake navmesh
-        StartCoroutine(BuildNavMesh());
+            // Check if we successfully placed at least one door
+            if (doorsPlaced > 0)
+            {
+                successfulGeneration = true;
 
-        // STEP 3: Enemies
-        SpawnEnemies(layout, roomSize, anchor);
+                // STEP 5: Walls AFTER all physics-based things are placed
+                BuildWallsAround(layout, anchor);
 
+                // STEP 4: Loot
+                SpawnLootChests(layout, anchor);
+
+                // STEP 6: Bake navmesh
+                StartCoroutine(BuildNavMesh());
+
+                // STEP 3: Enemies
+                SpawnEnemies(layout, roomSize, anchor);
+            }
+            else
+            {
+                regenerationAttempt++;
+                Debug.LogWarning($"Failed to place doors, regenerating room (attempt {regenerationAttempt}/{MAX_REGENERATION_ATTEMPTS})");
+            }
+        }
+
+        if (!successfulGeneration)
+        {
+            Debug.LogError("Failed to generate room with valid door placement after maximum attempts");
+        }
     }
+
 
     private IEnumerator BuildNavMesh()
     {
@@ -223,7 +252,7 @@ public class LevelGenerationManager : MonoBehaviour
         }
     }
 
-    private void SpawnDoors(int[][] layout, Vector2Int anchor)
+    private int SpawnDoors(int[][] layout, Vector2Int anchor)
     {
         List<(int x, int y, Vector2Int dir)> candidates = new();
         Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
@@ -306,6 +335,8 @@ public class LevelGenerationManager : MonoBehaviour
                 placed++;
             }
         }
+
+        return placed; // Return the number of doors placed
     }
 
     private int GetHallwayLength(int startX, int startY, Vector2Int dir, int[][] layout)
@@ -396,7 +427,37 @@ public class LevelGenerationManager : MonoBehaviour
 
         int hallwayLength = GetHallwayLength(startX, startY, dir, layout);
 
-        for (int d = 0; d <= hallwayLength; d++)
+        // First, place floor tiles under the door itself
+        for (int dx = 0; dx < 2; dx++)
+        {
+            Vector3 offset = new Vector3(
+                dir.x == 0 ? dx * TILE_SIZE : 0,
+                0,
+                dir.y == 0 ? dx * TILE_SIZE : 0
+            );
+
+            Vector3 doorFloorLocal = doorLocalPos + offset - new Vector3(TILE_SIZE, 0, TILE_SIZE) / 2f;
+            Vector3 doorFloorWorld = roomParent.transform.TransformPoint(doorFloorLocal);
+
+            // Always place floor under the door position
+            if (!IsPositionBlocked(doorFloorWorld))
+            {
+                Instantiate(hallwayFloorPrefab, doorFloorWorld, Quaternion.identity, roomParent.transform);
+
+                // Build walls on the sides of the hallway
+                if ((dx == 1 && (dir.x >= 0.01 || dir.y >= 0.01)) || (dx == 0 && (dir.x <= -0.01 || dir.y <= -0.01)))
+                {
+                    BuildWallSegement(doorFloorLocal + new Vector3(dir.y, 0, dir.x) * TILE_SIZE);
+                }
+                else
+                {
+                    BuildWallSegement(doorFloorLocal + new Vector3(dir.y * -1, 0, dir.x * -1) * TILE_SIZE);
+                }
+            }
+        }
+
+        // Then continue with the rest of the hallway
+        for (int d = 1; d <= hallwayLength; d++)
         {
             for (int dx = 0; dx < 2; dx++)
             {
