@@ -7,6 +7,7 @@ public class RoomGenerateTrigger : MonoBehaviour
     // This will be set by the LevelGenerationManager when the hallway is created.
     public Transform roomSpawnPoint;
     private bool hasBeenTriggered = false;
+    public GameObject door;
 
     private void Awake()
     {

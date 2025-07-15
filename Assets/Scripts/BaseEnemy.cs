@@ -101,6 +101,10 @@ public abstract class BaseEnemy : MonoBehaviour, Health
         {
             if (!dead)
             {
+                if (GameManager.Instance != null && GameManager.Instance != null)
+                {
+                    GameManager.Instance.OnEnemyDefeated(gameObject);
+                }
                 StartCoroutine(Die());
             }
         }

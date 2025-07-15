@@ -14,6 +14,9 @@ public class GameManager : MonoBehaviour
     private GameObject activeRoom2;
     private HashSet<Transform> activeSpawnPoints = new HashSet<Transform>();
 
+    public Dictionary<GameObject, List<GameObject>> roomEnemies = new();
+    public Dictionary<GameObject, List<GameObject>> roomDoors = new();
+
     private void Awake()
     {
         // A simple singleton pattern to make the instance easily accessible.
@@ -67,5 +70,36 @@ public class GameManager : MonoBehaviour
 
         // Tell the level generator to create a room and give us the parent GameObject.
         activeRoom1 = levelGenerator.GenerateARoom(spawnPoint.position, spawnPoint.rotation);
+    }
+
+    public void OnEnemyDefeated(GameObject enemy)
+    {
+        // Find which room the enemy belongs to
+        foreach (var entry in roomEnemies)
+        {
+            if (entry.Value.Contains(enemy))
+            {
+                entry.Value.Remove(enemy);
+
+                // If all enemies in the room are defeated, open the door
+                if (entry.Value.Count == 0)
+                {
+                    OpenDoors(entry.Key); // Implement this method to open doors
+                }
+                break;
+            }
+        }
+    }
+
+    private void OpenDoors(GameObject room)
+    {
+        if (roomDoors.ContainsKey(room))
+        {
+            foreach (var door in roomDoors[room])
+            {
+                // Replace with actual logic to open the door
+                door.GetComponent<Open>().OpenObject();
+            }
+        }
     }
 }

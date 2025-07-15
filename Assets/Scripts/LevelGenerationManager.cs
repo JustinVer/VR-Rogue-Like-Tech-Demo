@@ -31,6 +31,8 @@ public class LevelGenerationManager : MonoBehaviour
 
     private int doorsPlaced = 0;
 
+
+
     public GameObject GenerateARoom(Vector3 position, Quaternion rotation)
     {
         Debug.Log("New room generating");
@@ -237,6 +239,7 @@ public class LevelGenerationManager : MonoBehaviour
 
     private void SpawnEnemies(int[][] layout, int roomSize, Vector2Int anchor, GameObject roomParent)
     {
+        List<GameObject> enemies = new();
         int maxEnemies = (int)(roomSize * Mathf.Lerp(minEnemyPercentage, maxEnemyPercentage, Random.value));
         int spawned = 0;
         int tries = 0;
@@ -260,13 +263,15 @@ public class LevelGenerationManager : MonoBehaviour
                 Vector3 worldPos = roomParent.transform.TransformPoint(localPos) + new Vector3(0, 1, 0);
                 if (!IsPositionBlocked(worldPos + new Vector3(0, 1.5f, 0)))
                 {
-                    Instantiate(enemy.prefab, worldPos, Quaternion.identity, roomParent.transform);
+                    GameObject enemyInstance = Instantiate(enemy.prefab, worldPos, Quaternion.identity, roomParent.transform);
+                    enemies.Add(enemyInstance);
                     spawned += enemy.tileWidth * enemy.tileHeight;
                 }
             }
 
             tries++;
         }
+        GameManager.Instance.roomEnemies[roomParent] = enemies;
     }
 
     private void SpawnLootChests(int[][] layout, Vector2Int anchor)
@@ -301,6 +306,7 @@ public class LevelGenerationManager : MonoBehaviour
 
     private IEnumerator SpawnDoors(int[][] layout, Vector2Int anchor)
     {
+        List<GameObject> doors = new();
         List<(int x, int y, Vector2Int dir)> candidates = new();
         Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
@@ -378,13 +384,15 @@ public class LevelGenerationManager : MonoBehaviour
             // Pass layout to check if hallway can be built
             if (CanBuildHallway(localDoorPos, dir, layout, anchor))
             {
-                Instantiate(doorPrefab, worldDoorPos, rot, roomParent.transform);
+                GameObject doorInstance = Instantiate(doorPrefab, worldDoorPos, rot, roomParent.transform);
+                doors.Add(doorInstance);
                 BuildHallway(localDoorPos, dir, layout, anchor);
                 placed++;
                 doorsPlaced++;
                 yield return null;
             }
         }
+        GameManager.Instance.roomDoors[roomParent] = doors;
     }
 
     private int GetHallwayLength(int startX, int startY, Vector2Int dir, int[][] layout)
@@ -504,6 +512,7 @@ public class LevelGenerationManager : MonoBehaviour
             }
         }
 
+        RoomGenerateTrigger trigger = null;
         // Then continue with the rest of the hallway
         for (int d = 1; d <= hallwayLength; d++)
         {
@@ -567,7 +576,7 @@ public class LevelGenerationManager : MonoBehaviour
                         triggerObject.name = "Hallway_Trigger";
 
                         // 3. Link the trigger to the new spawn point.
-                        RoomGenerateTrigger trigger = triggerObject.GetComponent<RoomGenerateTrigger>();
+                        trigger = triggerObject.GetComponent<RoomGenerateTrigger>();
                         if (trigger != null)
                         {
                             trigger.roomSpawnPoint = nextRoomSpawnObject.transform;
@@ -580,7 +589,8 @@ public class LevelGenerationManager : MonoBehaviour
                     else if (d == hallwayLength && dx == 1)
                     {
                         Quaternion rot = Quaternion.LookRotation(roomParent.transform.TransformDirection(new Vector3(dir.x, 0, dir.y)));
-                        Instantiate(doorPrefab, roomParent.transform.TransformPoint(doorLocalPos + new Vector3(dir.x, 0, dir.y) * TILE_SIZE * (d + 0.95f)), rot, roomParent.transform);
+                        GameObject door = Instantiate(doorPrefab, roomParent.transform.TransformPoint(doorLocalPos + new Vector3(dir.x, 0, dir.y) * TILE_SIZE * (d + 0.95f)), rot, roomParent.transform);
+                        trigger.door = door;
                     }
                 }
             }
