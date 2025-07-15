@@ -137,6 +137,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5163819570651062904}
     m_Modifications:
+    - target: {fileID: -6254230307082699796, guid: 4d36c5a09a1561c4eb8b538980f76d02, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1011983642, guid: 4d36c5a09a1561c4eb8b538980f76d02, type: 3}
       propertyPath: m_Name
       value: WinterCastleDoor_v2_R
@@ -286,7 +290,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1.6173561, y: 4.130883, z: 0.5100215}
   m_Center: {x: -0.034909397, y: 0.09691447, z: 0.02759894}

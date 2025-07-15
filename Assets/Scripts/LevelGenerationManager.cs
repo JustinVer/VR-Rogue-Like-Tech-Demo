@@ -16,72 +16,84 @@ public class LevelGenerationManager : MonoBehaviour
     public GameObject doorPrefab;
     public GameObject hallwayFloorPrefab;
     public GameObject lootChestPrefab;
+    public GameObject hallwayTriggerPrefab;
 
     public List<EnemyData> enemyTypes;
     public NavMeshSurface[] navMeshSurface;
-    public Vector3[] spawnPositions;
-    public Quaternion[] spawnRotations;
 
     private const int TILE_SIZE = 2;
     private GameObject roomParent;
+    private bool successfulGeneration = false;
 
-    private void Start()
+    [Header("Generation Performance")]
+    [SerializeField] private int tilesPerFrame = 10; // How many tiles to process per frame
+    [SerializeField] private float maxTimePerFrame = 0.008f; // Max time in seconds per frame (8ms for 120fps target)
+
+    private int doorsPlaced = 0;
+
+    public GameObject GenerateARoom(Vector3 position, Quaternion rotation)
     {
-        StartCoroutine(GenerateRoomsOverTime());
+        Debug.Log("New room generating");
+        // Create and return the parent immediately
+        GameObject roomParentObject = new GameObject("GeneratedRoom");
+        roomParentObject.transform.position = position;
+        roomParentObject.transform.rotation = rotation;
+
+        // Start the async generation
+        StartCoroutine(GenerateRoomContentAsync(roomParentObject, position, rotation));
+
+        // Return immediately so calling code has the reference
+        return roomParentObject;
     }
 
-    private IEnumerator GenerateRoomsOverTime()
-    {
-        for (int i = 0; i < spawnPositions.Length && i < spawnRotations.Length; i++)
-        {
-            GenerateARoom(spawnPositions[i], spawnRotations[i]);
-            yield return null;
-        }
-    }
-
-    public void GenerateARoom(Vector3 position, Quaternion rotation)
+    private IEnumerator GenerateRoomContentAsync(GameObject roomParentObject, Vector3 position, Quaternion rotation)
     {
         const int MAX_REGENERATION_ATTEMPTS = 10;
         int regenerationAttempt = 0;
-        bool successfulGeneration = false;
 
-        while (!successfulGeneration && regenerationAttempt < MAX_REGENERATION_ATTEMPTS)
+        // Use the passed-in parent instead of creating a new one
+        roomParent = roomParentObject;
+
+        successfulGeneration = false;
+        while (successfulGeneration == false && regenerationAttempt < MAX_REGENERATION_ATTEMPTS)
         {
-            // Clean up previous attempt if exists
-            if (roomParent != null)
+            // Clear children if this is a retry
+            if (regenerationAttempt > 0)
             {
-                Destroy(roomParent);
+                foreach (Transform child in roomParent.transform)
+                {
+                    Destroy(child.gameObject);
+                }
+                yield return null; // Wait a frame for destruction
             }
-
-            roomParent = new GameObject("GeneratedRoom");
-            roomParent.transform.position = position;
-            roomParent.transform.rotation = rotation;
 
             int roomSize = Random.Range(minRoomSize, maxRoomSize);
             (int[][] layout, Vector2Int anchor) = GetNewFloor(roomSize);
 
-            // STEP 1: Floor
-            GenerateFloor(layout, anchor);
+            // STEP 1: Floor - Now as coroutine
+            yield return StartCoroutine(GenerateFloor(layout, anchor));
 
-            // STEP 2: Doors & Hallways before any walls or obstacles exist
-            int doorsPlaced = SpawnDoors(layout, anchor);
+            // STEP 2: Doors & Hallways - Now as coroutine
+            doorsPlaced = 0;
+            Debug.Log("Before door");
+            yield return StartCoroutine(SpawnDoors(layout, anchor));
+            Debug.Log("After door");
 
             // Check if we successfully placed at least one door
             if (doorsPlaced > 0)
             {
+                Debug.Log("Doors placed more than 0");
                 successfulGeneration = true;
 
-                // STEP 5: Walls AFTER all physics-based things are placed
-                BuildWallsAround(layout, anchor);
+                // Build walls - Now as coroutine
+                yield return StartCoroutine(BuildWallsAround(layout, anchor));
 
-                // STEP 4: Loot
+                // Spawn loot chests - Now as coroutine
                 SpawnLootChests(layout, anchor);
 
-                // STEP 6: Bake navmesh
-                StartCoroutine(BuildNavMesh());
-
-                // STEP 3: Enemies
-                SpawnEnemies(layout, roomSize, anchor);
+                Debug.Log("Nav mesh started rebaking");
+                yield return StartCoroutine(BuildNavMeshAndEnemies(layout, roomSize, anchor, roomParent));
+                Debug.Log("nav mesh finished baking");
             }
             else
             {
@@ -93,23 +105,44 @@ public class LevelGenerationManager : MonoBehaviour
         if (!successfulGeneration)
         {
             Debug.LogError("Failed to generate room with valid door placement after maximum attempts");
+            // Optionally destroy the room if generation failed completely
+            // Destroy(roomParentObject);
         }
+
+        roomParent = null;
     }
 
-
-    private IEnumerator BuildNavMesh()
+    public void RebakeAllNavMeshes()
     {
-        yield return null;
+        Debug.Log("Nav Mesh rebake");
         if (navMeshSurface != null)
         {
             foreach (NavMeshSurface navMesh in navMeshSurface)
-                navMesh.BuildNavMesh();
+            {
+
+                if (navMesh != null)
+                {
+                    Debug.Log("Nav Mesh rebake single");
+                    navMesh.BuildNavMesh();
+                }
+            }
         }
+    }
+
+    private IEnumerator BuildNavMeshAndEnemies(int[][] layout, int roomSize, Vector2Int anchor, GameObject roomParent)
+    {
+        yield return null;
+        Debug.Log("Before nav mesh in method");
+        RebakeAllNavMeshes();
+        Debug.Log("Finished nav mesh in mehtod");
+        yield return null;
+        SpawnEnemies(layout, roomSize, anchor, roomParent);
+        Debug.Log("Finished placing enemies");
     }
 
     private (int[][], Vector2Int) GetNewFloor(int roomSize)
     {
-        int size = (int)(Mathf.Sqrt(roomSize) + 5);
+        int size = (int)(Mathf.Sqrt(roomSize) + 10);
         int[][] layout = new int[size][];
         for (int i = 0; i < size; i++) layout[i] = new int[size];
 
@@ -171,8 +204,11 @@ public class LevelGenerationManager : MonoBehaviour
         return (layout, anchor);
     }
 
-    private void GenerateFloor(int[][] layout, Vector2Int anchor)
+    private IEnumerator GenerateFloor(int[][] layout, Vector2Int anchor)
     {
+        float startTime = Time.realtimeSinceStartup;
+        int tilesProcessed = 0;
+
         for (int x = 0; x < layout.Length; x++)
         {
             for (int y = 0; y < layout[0].Length; y++)
@@ -183,12 +219,23 @@ public class LevelGenerationManager : MonoBehaviour
                     Vector3 worldPos = roomParent.transform.TransformPoint(localPos);
                     GameObject prefab = (x + y) % 2 == 0 ? floorPrefab1 : floorPrefab2;
                     Instantiate(prefab, worldPos, Quaternion.identity, roomParent.transform);
+
+                    tilesProcessed++;
+
+                    // Yield based on tiles processed or time elapsed
+                    if (tilesProcessed >= tilesPerFrame ||
+                        (Time.realtimeSinceStartup - startTime) > maxTimePerFrame)
+                    {
+                        yield return null; // Wait for next frame
+                        startTime = Time.realtimeSinceStartup;
+                        tilesProcessed = 0;
+                    }
                 }
             }
         }
     }
 
-    private void SpawnEnemies(int[][] layout, int roomSize, Vector2Int anchor)
+    private void SpawnEnemies(int[][] layout, int roomSize, Vector2Int anchor, GameObject roomParent)
     {
         int maxEnemies = (int)(roomSize * Mathf.Lerp(minEnemyPercentage, maxEnemyPercentage, Random.value));
         int spawned = 0;
@@ -210,8 +257,8 @@ public class LevelGenerationManager : MonoBehaviour
             if (canPlace)
             {
                 Vector3 localPos = GetLocalOffset(x + enemy.tileWidth / 2, y + enemy.tileHeight / 2, anchor);
-                Vector3 worldPos = roomParent.transform.TransformPoint(localPos);
-                if (!IsPositionBlocked(worldPos + new Vector3(0, 2, 0)))
+                Vector3 worldPos = roomParent.transform.TransformPoint(localPos) + new Vector3(0, 1, 0);
+                if (!IsPositionBlocked(worldPos + new Vector3(0, 1.5f, 0)))
                 {
                     Instantiate(enemy.prefab, worldPos, Quaternion.identity, roomParent.transform);
                     spawned += enemy.tileWidth * enemy.tileHeight;
@@ -224,7 +271,7 @@ public class LevelGenerationManager : MonoBehaviour
 
     private void SpawnLootChests(int[][] layout, Vector2Int anchor)
     {
-        int count = Random.Range(1, 5);
+        int count = Random.Range(1, 3);
         int spawned = 0;
         int tries = 0;
 
@@ -240,9 +287,9 @@ public class LevelGenerationManager : MonoBehaviour
             }
 
             Vector3 localPos = GetLocalOffset(x, y, anchor);
-            Vector3 worldPos = roomParent.transform.TransformPoint(localPos);
+            Vector3 worldPos = roomParent.transform.TransformPoint(localPos) + new Vector3(0, 1, 0);
 
-            if (!IsPositionBlocked(worldPos + new Vector3(0, 2, 0)))
+            if (!IsPositionBlocked(worldPos + new Vector3(0, 1, 0)))
             {
                 Instantiate(lootChestPrefab, worldPos, Quaternion.identity, roomParent.transform);
                 spawned++;
@@ -252,7 +299,7 @@ public class LevelGenerationManager : MonoBehaviour
         }
     }
 
-    private int SpawnDoors(int[][] layout, Vector2Int anchor)
+    private IEnumerator SpawnDoors(int[][] layout, Vector2Int anchor)
     {
         List<(int x, int y, Vector2Int dir)> candidates = new();
         Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
@@ -301,6 +348,7 @@ public class LevelGenerationManager : MonoBehaviour
         }
 
         Debug.Log("FIXED door candidates: " + candidates.Count);
+        yield return null;
 
         System.Random rng = new();
         for (int i = candidates.Count - 1; i > 0; i--)
@@ -333,10 +381,10 @@ public class LevelGenerationManager : MonoBehaviour
                 Instantiate(doorPrefab, worldDoorPos, rot, roomParent.transform);
                 BuildHallway(localDoorPos, dir, layout, anchor);
                 placed++;
+                doorsPlaced++;
+                yield return null;
             }
         }
-
-        return placed; // Return the number of doors placed
     }
 
     private int GetHallwayLength(int startX, int startY, Vector2Int dir, int[][] layout)
@@ -504,7 +552,32 @@ public class LevelGenerationManager : MonoBehaviour
                         BuildWallSegement(local + new Vector3(dir.y * -1, 0, dir.x * -1) * TILE_SIZE);
                     }
 
-                    if (d == hallwayLength && dx == 1)
+                    if (d == hallwayLength && dx == 0)
+                    {
+                        Vector3 nextRoomPosition = world + new Vector3(dir.x, 0, dir.y) * TILE_SIZE;
+                        Quaternion nextRoomRotation = Quaternion.LookRotation(roomParent.transform.TransformDirection(new Vector3(dir.x, 0, dir.y)));
+                        GameObject nextRoomSpawnObject = new GameObject("nextRoomSpawnPoint");
+                        nextRoomSpawnObject.transform.position = nextRoomPosition;
+                        nextRoomSpawnObject.transform.rotation = nextRoomRotation;
+                        nextRoomSpawnObject.transform.SetParent(roomParent.transform, true);
+
+                        Vector3 hallwayStartWorldPos = roomParent.transform.TransformPoint(doorLocalPos);
+                        Vector3 triggerPos = Vector3.Lerp(hallwayStartWorldPos, world, 0.5f);
+                        GameObject triggerObject = Instantiate(hallwayTriggerPrefab, triggerPos, nextRoomRotation, roomParent.transform);
+                        triggerObject.name = "Hallway_Trigger";
+
+                        // 3. Link the trigger to the new spawn point.
+                        RoomGenerateTrigger trigger = triggerObject.GetComponent<RoomGenerateTrigger>();
+                        if (trigger != null)
+                        {
+                            trigger.roomSpawnPoint = nextRoomSpawnObject.transform;
+                        }
+                        else
+                        {
+                            Debug.LogError("hallwayTriggerPrefab is missing the HallwayTrigger script!", hallwayTriggerPrefab);
+                        }
+                    }
+                    else if (d == hallwayLength && dx == 1)
                     {
                         Quaternion rot = Quaternion.LookRotation(roomParent.transform.TransformDirection(new Vector3(dir.x, 0, dir.y)));
                         Instantiate(doorPrefab, world - (offset / 2), rot, roomParent.transform);
@@ -514,9 +587,11 @@ public class LevelGenerationManager : MonoBehaviour
         }
     }
 
-    private void BuildWallsAround(int[][] layout, Vector2Int anchor)
+    private IEnumerator BuildWallsAround(int[][] layout, Vector2Int anchor)
     {
         Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+        float startTime = Time.realtimeSinceStartup;
+        int wallsProcessed = 0;
 
         for (int x = 0; x < layout.Length; x++)
         {
@@ -530,7 +605,20 @@ public class LevelGenerationManager : MonoBehaviour
                     int ny = y + dir.y;
                     bool needsWall = nx < 0 || ny < 0 || nx >= layout.Length || ny >= layout[0].Length || layout[nx][ny] == 0;
                     if (!needsWall) continue;
+
+                    // Build wall segment as coroutine
                     BuildWallSegement(anchor, nx, ny);
+
+                    wallsProcessed++;
+
+                    // Yield based on walls processed or time elapsed
+                    if (wallsProcessed >= tilesPerFrame ||
+                        (Time.realtimeSinceStartup - startTime) > maxTimePerFrame)
+                    {
+                        yield return null; // Wait for next frame
+                        startTime = Time.realtimeSinceStartup;
+                        wallsProcessed = 0;
+                    }
                 }
             }
         }
