@@ -8,10 +8,8 @@ public class GameManager : MonoBehaviour
 
     [Header("References")]
     public LevelGenerationManager levelGenerator;
-    public Transform playerTransform; // Assign your player transform here in the Inspector
     public Transform firstRoomPosition;
 
-    // A Queue is perfect for this: First-In, First-Out.
     [SerializeField] private GameObject activeRoom1;
     private GameObject activeRoom2;
     private HashSet<Transform> activeSpawnPoints = new HashSet<Transform>();

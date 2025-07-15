@@ -357,7 +357,7 @@ public class LevelGenerationManager : MonoBehaviour
             (candidates[i], candidates[swap]) = (candidates[swap], candidates[i]);
         }
 
-        int doorCount = Mathf.Min(Random.Range(2, 5), candidates.Count);
+        int doorCount = Mathf.Min(Random.Range(2, 4), candidates.Count);
         int placed = 0;
 
         foreach (var (x, y, dir) in candidates)
@@ -554,7 +554,7 @@ public class LevelGenerationManager : MonoBehaviour
 
                     if (d == hallwayLength && dx == 0)
                     {
-                        Vector3 nextRoomPosition = world + new Vector3(dir.x, 0, dir.y) * TILE_SIZE;
+                        Vector3 nextRoomPosition = roomParent.transform.TransformPoint(local + new Vector3(dir.x, 0, dir.y) * TILE_SIZE);
                         Quaternion nextRoomRotation = Quaternion.LookRotation(roomParent.transform.TransformDirection(new Vector3(dir.x, 0, dir.y)));
                         GameObject nextRoomSpawnObject = new GameObject("nextRoomSpawnPoint");
                         nextRoomSpawnObject.transform.position = nextRoomPosition;
@@ -562,7 +562,7 @@ public class LevelGenerationManager : MonoBehaviour
                         nextRoomSpawnObject.transform.SetParent(roomParent.transform, true);
 
                         Vector3 hallwayStartWorldPos = roomParent.transform.TransformPoint(doorLocalPos);
-                        Vector3 triggerPos = Vector3.Lerp(hallwayStartWorldPos, world, 0.5f);
+                        Vector3 triggerPos = Vector3.Lerp(hallwayStartWorldPos, roomParent.transform.TransformPoint(doorLocalPos + stepDir), 0.5f);
                         GameObject triggerObject = Instantiate(hallwayTriggerPrefab, triggerPos, nextRoomRotation, roomParent.transform);
                         triggerObject.name = "Hallway_Trigger";
 
@@ -580,7 +580,7 @@ public class LevelGenerationManager : MonoBehaviour
                     else if (d == hallwayLength && dx == 1)
                     {
                         Quaternion rot = Quaternion.LookRotation(roomParent.transform.TransformDirection(new Vector3(dir.x, 0, dir.y)));
-                        Instantiate(doorPrefab, world - (offset / 2), rot, roomParent.transform);
+                        Instantiate(doorPrefab, roomParent.transform.TransformPoint(doorLocalPos + new Vector3(dir.x, 0, dir.y) * TILE_SIZE * (d + 0.95f)), rot, roomParent.transform);
                     }
                 }
             }

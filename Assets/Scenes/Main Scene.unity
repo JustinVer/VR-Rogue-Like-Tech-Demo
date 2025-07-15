@@ -161,10 +161,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fc38d3bdf612e44eb76d3e8686b053b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minRoomSize: 75
+  minRoomSize: 100
   maxRoomSize: 300
-  minEnemyPercentage: 0.02
-  maxEnemyPercentage: 0.25
+  minEnemyPercentage: 0.05
+  maxEnemyPercentage: 0.15
   floorPrefab1: {fileID: 4500182590525042551, guid: bad351c878112904cbbc404a34243224, type: 3}
   floorPrefab2: {fileID: 8772164617101858029, guid: fa306266e6d7b2d47a760ef1081bdf80, type: 3}
   wallPrefab: {fileID: 1452641802217029215, guid: 410fa1947d1cc1246a20cef9517cf7d0, type: 3}
@@ -1129,7 +1129,7 @@ Transform:
   m_GameObject: {fileID: 602239900}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 23.330124, y: -4.975678, z: -24.046766}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1723,7 +1723,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelGenerator: {fileID: 170622319}
-  playerTransform: {fileID: 2117732750}
   firstRoomPosition: {fileID: 1116664372}
   activeRoom1: {fileID: 488089157}
 --- !u!4 &1514079338
@@ -2059,11 +2058,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
---- !u!4 &2117732750 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
-  m_PrefabInstance: {fileID: 2117732749}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2122271763
 PrefabInstance:
   m_ObjectHideFlags: 0
