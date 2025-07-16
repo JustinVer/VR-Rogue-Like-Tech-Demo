@@ -123,8 +123,8 @@ MonoBehaviour:
   maxHealth: 40
   damage: 10
   attackCooldown: 6
-  attackRange: 55
-  detectionRange: 60
+  attackRange: 35
+  detectionRange: 35
   detectionPoint: {fileID: 4691478531205866752}
   detectionLayerMask:
     serializedVersion: 2

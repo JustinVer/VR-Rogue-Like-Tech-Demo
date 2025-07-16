@@ -124,7 +124,7 @@ MonoBehaviour:
   damage: 20
   attackCooldown: 4
   attackRange: 15
-  detectionRange: 30
+  detectionRange: 15
   detectionPoint: {fileID: 7289137338109677917}
   detectionLayerMask:
     serializedVersion: 2
