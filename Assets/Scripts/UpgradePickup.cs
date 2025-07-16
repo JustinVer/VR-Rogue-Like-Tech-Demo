@@ -6,13 +6,8 @@ public class UpgradePickup : MonoBehaviour
 
     public UpgradeType upgradeType;
     public float value = 5f;
-    [SerializeField] private Vector3 offset = Vector3.up * 1.5f;
+    [SerializeField] private Vector3 offset = Vector3.up;
     [SerializeField] private string text;
-
-    private void Start()
-    {
-        showText();
-    }
 
     public void trigger()
     {
@@ -28,7 +23,7 @@ public class UpgradePickup : MonoBehaviour
 
         GeneralReferences.Instance.powerUpTextObject.transform.position = this.transform.position + offset;
         GeneralReferences.Instance.powerUpTextBox.text = text;
-        GeneralReferences.Instance.powerUpTextObject.transform.rotation = Quaternion.identity;
+        GeneralReferences.Instance.powerUpTextObject.transform.rotation = this.transform.rotation * Quaternion.Euler(0, 180, 0);
         GeneralReferences.Instance.powerUpTextObject.gameObject.SetActive(true);
         Debug.Log("Text is shown");
     }

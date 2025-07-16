@@ -287,16 +287,24 @@ public class LevelGenerationManager : MonoBehaviour
 
     private void SpawnLootChests(int[][] layout, Vector2Int anchor)
     {
-        int count = Random.Range(1, 3);
+        int count = Random.Range(1, 4);
         int spawned = 0;
         int tries = 0;
 
-        while (spawned < count && tries < 100)
+        while (spawned < count && tries < 5555)
         {
             int x = Random.Range(0, layout.Length);
             int y = Random.Range(0, layout[0].Length);
 
             if (layout[x][y] != 1)
+            {
+                tries++;
+                continue;
+            }
+
+            // Check if position has 1 or fewer adjacent walls
+            int adjacentWalls = CountAdjacentWalls(layout, x, y);
+            if (adjacentWalls != 1)
             {
                 tries++;
                 continue;
@@ -328,7 +336,28 @@ public class LevelGenerationManager : MonoBehaviour
         }
     }
 
-    // Add this helper method to find the nearest wall
+    // Add this helper method to count adjacent walls
+    private int CountAdjacentWalls(int[][] layout, int x, int y)
+    {
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+        int wallCount = 0;
+
+        foreach (var dir in directions)
+        {
+            int checkX = x + dir.x;
+            int checkY = y + dir.y;
+
+            // Count as a wall if it's out of bounds or empty space
+            if (checkX < 0 || checkY < 0 || checkX >= layout.Length || checkY >= layout[0].Length || layout[checkX][checkY] == 0)
+            {
+                wallCount++;
+            }
+        }
+
+        return wallCount;
+    }
+
+    // Keep the existing FindNearestWallDirection method
     private Vector2Int FindNearestWallDirection(int[][] layout, int x, int y)
     {
         Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
