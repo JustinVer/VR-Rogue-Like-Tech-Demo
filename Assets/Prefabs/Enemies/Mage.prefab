@@ -124,7 +124,7 @@ MonoBehaviour:
   damage: 20
   attackCooldown: 4
   attackRange: 15
-  detectionRange: 15
+  detectionRange: 7
   detectionPoint: {fileID: 7289137338109677917}
   detectionLayerMask:
     serializedVersion: 2
@@ -136,6 +136,8 @@ MonoBehaviour:
   animator: {fileID: 6058511346816304041}
   deathAnimationTime: 1.5
   rb: {fileID: 4065873827987875547}
+  healthBarPrefab: {fileID: 7519631487172043240, guid: ff367cb721f872f4e9bc8756ce864f4e, type: 3}
+  healthBarOffset: {x: 0, y: 2, z: 0}
   projectilePrefab: {fileID: 5500885643938334253, guid: cb5ac3094439da04faac43a31437592e, type: 3}
   firePoint: {fileID: 7289137338109677917}
   shootForce: 5

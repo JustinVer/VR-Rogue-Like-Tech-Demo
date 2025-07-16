@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public abstract class BaseEnemy : MonoBehaviour, Health
 {
@@ -26,6 +27,12 @@ public abstract class BaseEnemy : MonoBehaviour, Health
     protected bool attackInterupded = false;
     protected bool dead = false;
 
+    [Header("Health Bar Settings")]
+    public GameObject healthBarPrefab;
+    GameObject healthBarInstance;
+    private Slider healthBar;
+    [SerializeField] private Vector3 healthBarOffset = new Vector3(0, 2, 0);
+
     protected virtual void Start()
     {
         currentHealth = maxHealth;
@@ -34,6 +41,11 @@ public abstract class BaseEnemy : MonoBehaviour, Health
 
         // Disable agent auto rotation — we handle it ourselves
         agent.updateRotation = false;
+        GameObject canvas = GameObject.FindGameObjectWithTag("Canvas");
+        healthBarInstance = Instantiate(healthBarPrefab, transform.position + healthBarOffset, Quaternion.identity, canvas.transform);
+        healthBar = healthBarInstance.GetComponentInChildren<Slider>();
+        healthBar.maxValue = maxHealth;
+        healthBar.value = currentHealth;
     }
 
     protected virtual void Update()
@@ -42,7 +54,7 @@ public abstract class BaseEnemy : MonoBehaviour, Health
 
         float distance = Vector3.Distance(detectionPoint.position, player.position);
 
-        if (playerDetected || distance <= detectionRange)
+        if (playerDetected || distance <= detectionRange || !Physics.Linecast(detectionPoint.position, player.position + Vector3.up, detectionLayerMask))
         {
             playerDetected = true;
 
@@ -92,11 +104,14 @@ public abstract class BaseEnemy : MonoBehaviour, Health
                 }
             }
         }
+        healthBarInstance.transform.position = transform.position + healthBarOffset;
+        healthBar.transform.LookAt(Camera.main.transform);
     }
 
     public virtual void TakeDamage(float amount)
     {
         currentHealth -= amount;
+        UpdateHealthBar();
         if (currentHealth <= 0)
         {
             if (!dead)
@@ -115,6 +130,14 @@ public abstract class BaseEnemy : MonoBehaviour, Health
             {
                 animator.SetTrigger("Hit");
             }
+        }
+    }
+
+    private void UpdateHealthBar()
+    {
+        if (healthBar != null)
+        {
+            healthBar.value = currentHealth;
         }
     }
 
