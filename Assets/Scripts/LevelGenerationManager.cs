@@ -287,6 +287,7 @@ public class LevelGenerationManager : MonoBehaviour
 
     private void SpawnLootChests(int[][] layout, Vector2Int anchor)
     {
+        List<GameObject> chests = new();
         int count = Random.Range(1, 4);
         int spawned = 0;
         int tries = 0;
@@ -335,12 +336,14 @@ public class LevelGenerationManager : MonoBehaviour
                     rotation = Quaternion.LookRotation(worldDirection);
                 }
 
-                Instantiate(lootChestPrefab, worldPos, rotation, roomParent.transform);
+                GameObject chestInstance = Instantiate(lootChestPrefab, worldPos, rotation, roomParent.transform);
+                chests.Add(chestInstance);
                 spawned++;
             }
 
             tries++;
         }
+        GameManager.Instance.roomChests[roomParent] = chests;
     }
 
     // Add this helper method to check if a position is near a door

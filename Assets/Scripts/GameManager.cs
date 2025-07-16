@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
 
     public Dictionary<GameObject, List<GameObject>> roomEnemies = new();
     public Dictionary<GameObject, List<GameObject>> roomDoors = new();
+    public Dictionary<GameObject, List<GameObject>> roomChests = new();
 
     private void Awake()
     {
@@ -84,7 +85,8 @@ public class GameManager : MonoBehaviour
                 // If all enemies in the room are defeated, open the door
                 if (entry.Value.Count == 0)
                 {
-                    OpenDoors(entry.Key); // Implement this method to open doors
+                    OpenDoors(entry.Key);
+                    OpenChests(entry.Key);
                 }
                 break;
             }
@@ -97,8 +99,17 @@ public class GameManager : MonoBehaviour
         {
             foreach (var door in roomDoors[room])
             {
-                // Replace with actual logic to open the door
                 door.GetComponent<Open>().OpenObject();
+            }
+        }
+    }
+    private void OpenChests(GameObject room)
+    {
+        if (roomChests.ContainsKey(room))
+        {
+            foreach (var chest in roomChests[room])
+            {
+                chest.GetComponent<Chest>().trigger();
             }
         }
     }
