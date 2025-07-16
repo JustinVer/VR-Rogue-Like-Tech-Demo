@@ -307,12 +307,67 @@ public class LevelGenerationManager : MonoBehaviour
 
             if (!IsPositionBlocked(worldPos + new Vector3(0, 1, 0)))
             {
-                Instantiate(lootChestPrefab, worldPos, Quaternion.identity, roomParent.transform);
+                // Find the nearest wall direction
+                Vector2Int nearestWallDir = FindNearestWallDirection(layout, x, y);
+
+                // Calculate rotation to face away from the wall
+                Quaternion rotation = Quaternion.identity;
+                if (nearestWallDir != Vector2Int.zero)
+                {
+                    // Convert grid direction to world direction
+                    Vector3 awayFromWall = new Vector3(-nearestWallDir.x, 0, -nearestWallDir.y);
+                    Vector3 worldDirection = roomParent.transform.TransformDirection(awayFromWall);
+                    rotation = Quaternion.LookRotation(worldDirection);
+                }
+
+                Instantiate(lootChestPrefab, worldPos, rotation, roomParent.transform);
                 spawned++;
             }
 
             tries++;
         }
+    }
+
+    // Add this helper method to find the nearest wall
+    private Vector2Int FindNearestWallDirection(int[][] layout, int x, int y)
+    {
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+        int minDistance = int.MaxValue;
+        Vector2Int nearestWallDir = Vector2Int.zero;
+
+        foreach (var dir in directions)
+        {
+            int distance = 0;
+            int checkX = x;
+            int checkY = y;
+
+            // Keep checking in this direction until we hit a wall or edge
+            while (true)
+            {
+                checkX += dir.x;
+                checkY += dir.y;
+                distance++;
+
+                // Check if we've hit the edge of the layout or an empty space (wall)
+                if (checkX < 0 || checkY < 0 || checkX >= layout.Length || checkY >= layout[0].Length || layout[checkX][checkY] == 0)
+                {
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        nearestWallDir = dir;
+                    }
+                    break;
+                }
+
+                // Safety check to prevent infinite loops
+                if (distance > layout.Length + layout[0].Length)
+                {
+                    break;
+                }
+            }
+        }
+
+        return nearestWallDir;
     }
 
     private IEnumerator SpawnDoors(int[][] layout, Vector2Int anchor)
