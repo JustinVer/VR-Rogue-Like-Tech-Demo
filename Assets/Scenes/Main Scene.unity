@@ -172,6 +172,7 @@ MonoBehaviour:
   hallwayFloorPrefab: {fileID: 361931056623277241, guid: 017654b38a60d604b9bb14fd5ee8bae9, type: 3}
   lootChestPrefab: {fileID: 436001813402590916, guid: 835ca5ef8591e594a833d8d5a35f4630, type: 3}
   hallwayTriggerPrefab: {fileID: 5982715596124011408, guid: 673daacaf2c498847a2205c9b44ab252, type: 3}
+  KillZonePrefab: {fileID: 4084917547563751124, guid: 044aef401a1b6ac478d7083a246b1737, type: 3}
   enemyTypes:
   - prefab: {fileID: 1873796049094065829, guid: 90194b072a303c149be2fc23c56cec83, type: 3}
     tileWidth: 1

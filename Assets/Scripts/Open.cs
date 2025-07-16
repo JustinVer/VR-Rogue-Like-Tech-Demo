@@ -11,9 +11,28 @@ public class Open : MonoBehaviour
     {
         List<GameObject> objects = new List<GameObject>();
         this.gameObject.GetChildGameObjects(objects);
-        foreach (GameObject child in objects)
+        for (int i = 0; i < objects.Count; i++)
         {
-            StartCoroutine(RotateObject(child.transform, openAmount, openDuration));
+            float rotateAmount = openAmount;
+            if (i % 2 == 1)
+            {
+                openAmount = openAmount * -1f;
+            }
+            StartCoroutine(RotateObject(objects[i].transform, openAmount, openDuration));
+        }
+    }
+    public void CloseObject()
+    {
+        List<GameObject> objects = new List<GameObject>();
+        this.gameObject.GetChildGameObjects(objects);
+        for (int i = 0; i < objects.Count; i++)
+        {
+            float rotateAmount = openAmount;
+            if (i % 2 != 1)
+            {
+                openAmount = openAmount * -1f;
+            }
+            StartCoroutine(RotateObject(objects[i].transform, openAmount, openDuration));
         }
     }
     private IEnumerator RotateObject(Transform doorPart, float angle, float duration)

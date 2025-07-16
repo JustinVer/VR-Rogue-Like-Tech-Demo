@@ -1,4 +1,5 @@
 // HallwayTrigger.cs
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
@@ -8,6 +9,7 @@ public class RoomGenerateTrigger : MonoBehaviour
     public Transform roomSpawnPoint;
     private bool hasBeenTriggered = false;
     public GameObject door;
+    public GameObject closeDoor;
 
     private void Awake()
     {
@@ -30,9 +32,33 @@ public class RoomGenerateTrigger : MonoBehaviour
                 GameManager.Instance.RequestNewRoom(roomSpawnPoint);
             }
 
+            try
+            {
+                closeDoor.GetComponent<Open>().CloseObject();
+            }
+            catch (System.Exception)
+            { }
+
             // We destroy the trigger itself so it can't be used again.
             Destroy(roomSpawnPoint.gameObject);
-            Destroy(this.gameObject);
+            try
+            {
+                StartCoroutine(openDoor(door.GetComponent<Open>()));
+                Debug.Log("After door courtine");
+            }
+            catch (System.Exception)
+            { Debug.Log("error opening door"); }
+            this.gameObject.GetComponent<Collider>().enabled = false;
         }
+    }
+
+    private IEnumerator openDoor(Open door)
+    {
+        Debug.Log("waiting to open door");
+        yield return new WaitForSeconds(1f);
+        Debug.Log("before door call");
+        door.OpenObject();
+        Debug.Log("after door call");
+        Destroy(this.gameObject);
     }
 }

@@ -17,6 +17,7 @@ public class LevelGenerationManager : MonoBehaviour
     public GameObject hallwayFloorPrefab;
     public GameObject lootChestPrefab;
     public GameObject hallwayTriggerPrefab;
+    public GameObject KillZonePrefab;
 
     public List<EnemyData> enemyTypes;
     public NavMeshSurface[] navMeshSurface;
@@ -77,13 +78,23 @@ public class LevelGenerationManager : MonoBehaviour
 
             // STEP 2: Doors & Hallways - Now as coroutine
             doorsPlaced = 0;
-            Debug.Log("Before door");
             yield return StartCoroutine(SpawnDoors(layout, anchor));
-            Debug.Log("After door");
 
             // Check if we successfully placed at least one door
             if (doorsPlaced > 0)
             {
+                try
+                {
+                    GameObject zillzone = GameObject.Instantiate(KillZonePrefab, roomParent.transform);
+                    DPSZone dpsScript = zillzone.GetComponent<DPSZone>();
+                    dpsScript.DPS = 99999f;
+                    BoxCollider collider = zillzone.GetComponent<BoxCollider>();
+                    collider.center = zillzone.transform.position + (roomParentObject.transform.forward * layout.Length / 2f) - new Vector3(0, 10, 0);
+                    collider.size = new Vector3(layout.Length * 3.5f, 10, layout.Length * 3.5f);
+                }
+                catch (System.Exception)
+                { }
+
                 Debug.Log("Doors placed more than 0");
                 successfulGeneration = true;
 
@@ -386,7 +397,7 @@ public class LevelGenerationManager : MonoBehaviour
             {
                 GameObject doorInstance = Instantiate(doorPrefab, worldDoorPos, rot, roomParent.transform);
                 doors.Add(doorInstance);
-                BuildHallway(localDoorPos, dir, layout, anchor);
+                BuildHallway(localDoorPos, dir, layout, anchor, doorInstance);
                 placed++;
                 doorsPlaced++;
                 yield return null;
@@ -474,7 +485,7 @@ public class LevelGenerationManager : MonoBehaviour
         return Physics.CheckBox(checkCenter, halfExtents, Quaternion.identity, ~0);
     }
 
-    private void BuildHallway(Vector3 doorLocalPos, Vector2Int dir, int[][] layout, Vector2Int anchor)
+    private void BuildHallway(Vector3 doorLocalPos, Vector2Int dir, int[][] layout, Vector2Int anchor, GameObject firstDoor)
     {
         // Calculate hallway length
         Vector3 doorGridPos = doorLocalPos / TILE_SIZE + new Vector3(anchor.x, 0, anchor.y);
@@ -571,7 +582,7 @@ public class LevelGenerationManager : MonoBehaviour
                         nextRoomSpawnObject.transform.SetParent(roomParent.transform, true);
 
                         Vector3 hallwayStartWorldPos = roomParent.transform.TransformPoint(doorLocalPos);
-                        Vector3 triggerPos = Vector3.Lerp(hallwayStartWorldPos, roomParent.transform.TransformPoint(doorLocalPos + stepDir), 0.5f);
+                        Vector3 triggerPos = Vector3.Lerp(hallwayStartWorldPos, roomParent.transform.TransformPoint(doorLocalPos + stepDir), 0.6f);
                         GameObject triggerObject = Instantiate(hallwayTriggerPrefab, triggerPos, nextRoomRotation, roomParent.transform);
                         triggerObject.name = "Hallway_Trigger";
 
@@ -580,6 +591,7 @@ public class LevelGenerationManager : MonoBehaviour
                         if (trigger != null)
                         {
                             trigger.roomSpawnPoint = nextRoomSpawnObject.transform;
+                            trigger.closeDoor = firstDoor;
                         }
                         else
                         {
