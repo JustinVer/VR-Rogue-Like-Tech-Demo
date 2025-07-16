@@ -8,13 +8,23 @@ public class UpgradePickup : MonoBehaviour
     public float value = 5f;
     [SerializeField] private Vector3 offset = Vector3.up;
     [SerializeField] private string text;
+    public GameObject parent;
 
     public void trigger()
     {
         if (PlayerUpgradeSystem.instance)
         {
             PlayerUpgradeSystem.instance.ApplyUpgrade(upgradeType, value);
-            Destroy(gameObject);
+            hideText();
+            try
+            {
+                Chest chest = parent.GetComponent<Chest>();
+                chest.destroyPickups();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
     }
 

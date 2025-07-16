@@ -47,6 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chestAnim: {fileID: 2195522944567472119}
   offset: {x: 0, y: 0.3, z: 0}
+  sideOffset: 0.27
+  powerUpCount: 2
 --- !u!1001 &4109445593832466596
 PrefabInstance:
   m_ObjectHideFlags: 0
