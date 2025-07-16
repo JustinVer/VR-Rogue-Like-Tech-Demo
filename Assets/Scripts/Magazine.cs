@@ -13,6 +13,7 @@ public class Magazine : MonoBehaviour
     [SerializeField] private InteractionLayerMask defaultLayerMask;
     [SerializeField] private InteractionLayerMask magTypeLayerMask;
     [SerializeField] private XRGrabInteractable interactable;
+    [SerializeField] private Rigidbody rb;
     public Magazinespawner magazinespawner { set; private get; }
 
     public enum AmmoType { Pistol, Rifle, Sniper, Shotgun }

@@ -116,6 +116,9 @@ MonoBehaviour:
   rb: {fileID: 4065873827987875547}
   healthBarPrefab: {fileID: 7519631487172043240, guid: ff367cb721f872f4e9bc8756ce864f4e, type: 3}
   healthBarOffset: {x: 0, y: 2, z: 0}
+  afterDeathExlude:
+    serializedVersion: 2
+    m_Bits: 1015
 --- !u!136 &6274071105320802755
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -125,7 +125,7 @@ public class LevelGenerationManager : MonoBehaviour
         roomParent = null;
     }
 
-    public void RebakeAllNavMeshes()
+    public IEnumerator RebakeAllNavMeshes()
     {
         Debug.Log("Nav Mesh rebake");
         if (navMeshSurface != null)
@@ -137,6 +137,7 @@ public class LevelGenerationManager : MonoBehaviour
                 {
                     Debug.Log("Nav Mesh rebake single");
                     navMesh.BuildNavMesh();
+                    yield return null;
                 }
             }
         }
@@ -144,13 +145,10 @@ public class LevelGenerationManager : MonoBehaviour
 
     private IEnumerator BuildNavMeshAndEnemies(int[][] layout, int roomSize, Vector2Int anchor, GameObject roomParent)
     {
-        yield return null;
-        Debug.Log("Before nav mesh in method");
-        RebakeAllNavMeshes();
-        Debug.Log("Finished nav mesh in mehtod");
+        yield return StartCoroutine(RebakeAllNavMeshes());
         yield return null;
         SpawnEnemies(layout, roomSize, anchor, roomParent);
-        Debug.Log("Finished placing enemies");
+        yield return null;
     }
 
     private (int[][], Vector2Int) GetNewFloor(int roomSize)
@@ -708,7 +706,7 @@ public class LevelGenerationManager : MonoBehaviour
                         nextRoomSpawnObject.transform.SetParent(roomParent.transform, true);
 
                         Vector3 hallwayStartWorldPos = roomParent.transform.TransformPoint(doorLocalPos);
-                        Vector3 triggerPos = Vector3.Lerp(hallwayStartWorldPos, roomParent.transform.TransformPoint(doorLocalPos + stepDir), 0.6f);
+                        Vector3 triggerPos = Vector3.Lerp(hallwayStartWorldPos, roomParent.transform.TransformPoint(doorLocalPos + stepDir), 0.7f);
                         GameObject triggerObject = Instantiate(hallwayTriggerPrefab, triggerPos, nextRoomRotation, roomParent.transform);
                         triggerObject.name = "Hallway_Trigger";
 

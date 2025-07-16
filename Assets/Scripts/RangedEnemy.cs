@@ -28,6 +28,10 @@ public class RangedEnemy : BaseEnemy
             {
                 rb.velocity = firePoint.forward * shootForce;
             }
+            if (proj.TryGetComponent<Projectile>(out var projectile))
+            {
+                projectile.damage = damage * GameManager.Instance.currentDifficulty;
+            }
         }
     }
 }

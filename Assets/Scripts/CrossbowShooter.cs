@@ -60,6 +60,7 @@ public class CrossbowShooter : Holsterable
                 currentMag.turnOnColliders();
                 currentMag.turnOnInteraction();
             }
+            resetGroundTimer();
         }
 
     }
@@ -81,6 +82,7 @@ public class CrossbowShooter : Holsterable
                 currentMag.turnOffInteraction();
             }
         }
+        resetGroundTimer();
     }
 
     protected override void Update()

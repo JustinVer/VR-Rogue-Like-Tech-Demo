@@ -325,8 +325,8 @@ MonoBehaviour:
   - {fileID: 602239903}
   - {fileID: 602239902}
   - {fileID: 602239901}
-  tilesPerFrame: 10
-  maxTimePerFrame: 0.008
+  tilesPerFrame: 5
+  maxTimePerFrame: 0.004
 --- !u!4 &170622320
 Transform:
   m_ObjectHideFlags: 0
@@ -2072,6 +2072,8 @@ MonoBehaviour:
   levelGenerator: {fileID: 170622319}
   firstRoomPosition: {fileID: 1116664372}
   activeRoom1: {fileID: 488089157}
+  currentDifficulty: 1
+  difficultyIncrease: 0.02
 --- !u!4 &1514079338
 Transform:
   m_ObjectHideFlags: 0

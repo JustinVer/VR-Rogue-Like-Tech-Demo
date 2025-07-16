@@ -139,6 +139,9 @@ MonoBehaviour:
   rb: {fileID: 4065873827987875547}
   healthBarPrefab: {fileID: 7519631487172043240, guid: ff367cb721f872f4e9bc8756ce864f4e, type: 3}
   healthBarOffset: {x: 0, y: 2.1, z: 0}
+  afterDeathExlude:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &3314088986517738638
 GameObject:
   m_ObjectHideFlags: 0

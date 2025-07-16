@@ -32,6 +32,7 @@ public abstract class BaseEnemy : MonoBehaviour, Health
     GameObject healthBarInstance;
     private Slider healthBar;
     [SerializeField] private Vector3 healthBarOffset = new Vector3(0, 2, 0);
+    [SerializeField] private LayerMask afterDeathExlude;
 
     protected virtual void Start()
     {
@@ -110,7 +111,7 @@ public abstract class BaseEnemy : MonoBehaviour, Health
 
     public virtual void TakeDamage(float amount)
     {
-        currentHealth -= amount;
+        currentHealth -= (amount / GameManager.Instance.currentDifficulty);
         UpdateHealthBar();
         if (currentHealth <= 0)
         {
@@ -153,7 +154,10 @@ public abstract class BaseEnemy : MonoBehaviour, Health
         dead = true;
         animator.SetTrigger("Dead");
         yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).IsName("Die"));
+        Destroy(healthBarInstance);
         rb.velocity = Vector3.zero;
+        Collider collider = gameObject.GetComponent<Collider>();
+        collider.excludeLayers = afterDeathExlude;
         yield return new WaitForSeconds(deathAnimationTime);
         Destroy(gameObject);
     }

@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     public Dictionary<GameObject, List<GameObject>> roomEnemies = new();
     public Dictionary<GameObject, List<GameObject>> roomDoors = new();
     public Dictionary<GameObject, List<GameObject>> roomChests = new();
+    public float currentDifficulty = 1f;
+    public float difficultyIncrease = 0.02f;
 
     private void Awake()
     {
@@ -71,6 +73,7 @@ public class GameManager : MonoBehaviour
 
         // Tell the level generator to create a room and give us the parent GameObject.
         activeRoom1 = levelGenerator.GenerateARoom(spawnPoint.position, spawnPoint.rotation);
+        currentDifficulty = currentDifficulty * (difficultyIncrease + 1);
     }
 
     public void OnEnemyDefeated(GameObject enemy)

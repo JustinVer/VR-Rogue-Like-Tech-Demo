@@ -8,7 +8,7 @@ public class MeleeEnemy : BaseEnemy
             PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
             if (playerHealth != null)
             {
-                playerHealth.TakeDamage(damage);
+                playerHealth.TakeDamage(damage * GameManager.Instance.currentDifficulty);
             }
         }
     }
