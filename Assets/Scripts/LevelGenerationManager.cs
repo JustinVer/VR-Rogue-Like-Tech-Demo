@@ -31,7 +31,7 @@ public class LevelGenerationManager : MonoBehaviour
     [SerializeField] private float maxTimePerFrame = 0.008f; // Max time in seconds per frame (8ms for 120fps target)
 
     private int doorsPlaced = 0;
-
+    private List<Vector2Int> doorPositions = new List<Vector2Int>();
 
 
     public GameObject GenerateARoom(Vector3 position, Quaternion rotation)
@@ -302,9 +302,16 @@ public class LevelGenerationManager : MonoBehaviour
                 continue;
             }
 
-            // Check if position has 1 or fewer adjacent walls
+            // Check if position has exactly 1 adjacent wall
             int adjacentWalls = CountAdjacentWalls(layout, x, y);
             if (adjacentWalls != 1)
+            {
+                tries++;
+                continue;
+            }
+
+            // Check if this position is too close to any door
+            if (IsNearDoorPosition(x, y))
             {
                 tries++;
                 continue;
@@ -335,6 +342,27 @@ public class LevelGenerationManager : MonoBehaviour
             tries++;
         }
     }
+
+    // Add this helper method to check if a position is near a door
+    private bool IsNearDoorPosition(int x, int y)
+    {
+        // Check against all door positions
+        foreach (var doorPos in doorPositions)
+        {
+            // Calculate distance to door position
+            int distX = Mathf.Abs(x - doorPos.x);
+            int distY = Mathf.Abs(y - doorPos.y);
+
+            // If within 2 tiles of a door position, it's too close
+            if (distX <= 2 && distY <= 2)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     // Add this helper method to count adjacent walls
     private int CountAdjacentWalls(int[][] layout, int x, int y)
@@ -401,6 +429,8 @@ public class LevelGenerationManager : MonoBehaviour
 
     private IEnumerator SpawnDoors(int[][] layout, Vector2Int anchor)
     {
+        doorPositions.Clear(); // Clear previous door positions
+
         List<GameObject> doors = new();
         List<(int x, int y, Vector2Int dir)> candidates = new();
         Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
@@ -481,6 +511,15 @@ public class LevelGenerationManager : MonoBehaviour
             {
                 GameObject doorInstance = Instantiate(doorPrefab, worldDoorPos, rot, roomParent.transform);
                 doors.Add(doorInstance);
+
+                // Store door positions for chest placement
+                doorPositions.Add(new Vector2Int(x, y));
+                doorPositions.Add(new Vector2Int(x + perp.x, y + perp.y));
+
+                // Also store positions behind the door (inside the room)
+                doorPositions.Add(new Vector2Int(x - dir.x, y - dir.y));
+                doorPositions.Add(new Vector2Int(x + perp.x - dir.x, y + perp.y - dir.y));
+
                 BuildHallway(localDoorPos, dir, layout, anchor, doorInstance);
                 placed++;
                 doorsPlaced++;
