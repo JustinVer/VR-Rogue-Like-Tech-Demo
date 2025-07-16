@@ -7,32 +7,33 @@ public class Open : MonoBehaviour
 {
     [SerializeField] protected float openAmount = 95f;
     [SerializeField] protected float openDuration = 1f;
+    [SerializeField] protected int numRotations = 2;
     public void OpenObject()
     {
         List<GameObject> objects = new List<GameObject>();
         this.gameObject.GetChildGameObjects(objects);
-        for (int i = 0; i < objects.Count; i++)
+        for (int i = 0; i < objects.Count && i < numRotations; i++)
         {
             float rotateAmount = openAmount;
             if (i % 2 == 1)
             {
-                openAmount = openAmount * -1f;
+                rotateAmount = openAmount * -1f;
             }
-            StartCoroutine(RotateObject(objects[i].transform, openAmount, openDuration));
+            StartCoroutine(RotateObject(objects[i].transform, rotateAmount, openDuration));
         }
     }
     public void CloseObject()
     {
         List<GameObject> objects = new List<GameObject>();
         this.gameObject.GetChildGameObjects(objects);
-        for (int i = 0; i < objects.Count; i++)
+        for (int i = 0; i < objects.Count && i < numRotations; i++)
         {
             float rotateAmount = openAmount;
             if (i % 2 != 1)
             {
-                openAmount = openAmount * -1f;
+                rotateAmount = openAmount * -1f;
             }
-            StartCoroutine(RotateObject(objects[i].transform, openAmount, openDuration));
+            StartCoroutine(RotateObject(objects[i].transform, rotateAmount, openDuration));
         }
     }
     private IEnumerator RotateObject(Transform doorPart, float angle, float duration)
@@ -50,6 +51,5 @@ public class Open : MonoBehaviour
 
         doorPart.localRotation = targetRotation;
     }
-
 
 }
