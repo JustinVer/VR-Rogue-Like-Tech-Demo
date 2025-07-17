@@ -1097,9 +1097,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c07977a0dedc07a41baf62afdf5e5037, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageBonus: 0
-  damageModifier: 1
+  damageFlat: 0
+  damagePercentage: 1
   fireRateModifier: 1
+  projectileSpeedModifier: 1
+  multiShot: 1
+  projectileSizeModifier: 1
+  movementSpeedModifier: 1
+  jumpHeightModifier: 1
+  criticalChance: 0.01
+  criticalDamageMultiplier: 2
+  healthBonusFlat: 0
+  healthBonusPercentage: 1
+  damageReduction: 0
+  magazineSizePercentage: 1
+  playerHealth: {fileID: 0}
+  jumpProvider: {fileID: 0}
+  moveProvider: {fileID: 0}
 --- !u!114 &6627189037789804686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1112,6 +1126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bda98235ea01b784cac5cddfc7fe55fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseHealth: 100
   maxHealth: 100
 --- !u!1 &1787516059220952802
 GameObject:

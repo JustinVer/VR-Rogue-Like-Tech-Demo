@@ -15,10 +15,52 @@ public class GeneralReferences : MonoBehaviour
         else
         {
             Instance = this;
+            textBoxAvailable = new bool[textBoxes.Length];
+            for (int i = 0; i < textBoxAvailable.Length; i++)
+            {
+                textBoxAvailable[i] = true;
+            }
         }
     }
 
     public GameObject[] allPowerUps;
-    public GameObject powerUpTextObject;
-    public TextMeshProUGUI powerUpTextBox;
+    [SerializeField] private GameObject[] textBoxes;
+    private bool[] textBoxAvailable;
+
+    public (GameObject, TextMeshProUGUI) getTextBox()
+    {
+        GameObject textBoxOpen = null;
+        TextMeshProUGUI textBoxText = null;
+
+        for (int i = 0; i < textBoxAvailable.Length; i++)
+        {
+            if (textBoxAvailable[i])
+            {
+                textBoxOpen = textBoxes[i];
+                textBoxAvailable[i] = false;
+                if (textBoxOpen != null)
+                {
+                    textBoxText = textBoxOpen.GetComponentInChildren<TextMeshProUGUI>();
+                    if (textBoxText != null)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return (textBoxOpen, textBoxText);
+    }
+
+    public void returnTextBox(GameObject textBox)
+    {
+        for (int i = 0; i < textBoxes.Length; i++)
+        {
+            if (textBoxes[i] = textBox)
+            {
+                textBoxAvailable[i] = true;
+                textBox.SetActive(false);
+            }
+        }
+    }
 }

@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 public class UpgradePickup : MonoBehaviour
@@ -33,6 +34,9 @@ public class UpgradePickup : MonoBehaviour
     [SerializeField] private float bobSpeed = 1f;
 
     private Vector3 startPosition;
+    GameObject powerUpTextObject = null;
+    TextMeshProUGUI powerUpTextBox = null;
+
 
     private void Start()
     {
@@ -60,22 +64,23 @@ public class UpgradePickup : MonoBehaviour
             {
                 Debug.LogException(e);
             }
+            Destroy(this.gameObject);
         }
     }
 
     public void showText()
     {
-
-        GeneralReferences.Instance.powerUpTextObject.transform.position = this.transform.position + offset;
-        GeneralReferences.Instance.powerUpTextBox.text = text;
-        GeneralReferences.Instance.powerUpTextObject.transform.rotation = this.transform.rotation * Quaternion.Euler(0, 180, 0);
-        GeneralReferences.Instance.powerUpTextObject.gameObject.SetActive(true);
-        Debug.Log("Text is shown");
+        (powerUpTextObject, powerUpTextBox) = GeneralReferences.Instance.getTextBox();
+        powerUpTextObject.gameObject.SetActive(true);
+        powerUpTextObject.transform.position = parent.transform.position + offset;
+        powerUpTextBox.text = text;
+        Debug.Log("Rotation = " + parent.transform.rotation + " " + Quaternion.Euler(0, 180, 0) + " " + parent.transform.rotation * Quaternion.Euler(0, 180, 0));
+        powerUpTextObject.transform.rotation = parent.transform.rotation * Quaternion.Euler(0, 180, 0);
     }
 
     public void hideText()
     {
-        GeneralReferences.Instance.powerUpTextBox.text = "";
-        GeneralReferences.Instance.powerUpTextObject.gameObject.SetActive(false);
+        powerUpTextBox.text = "";
+        GeneralReferences.Instance.returnTextBox(powerUpTextObject);
     }
 }
