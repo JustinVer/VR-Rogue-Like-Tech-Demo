@@ -2,18 +2,19 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour, Health
 {
+    public float baseHealth = 100f;
     public float maxHealth = 100f;
     private float currentHealth;
 
     private void Start()
     {
+        PlayerUpgradeSystem.instance.playerHealth = this;
         currentHealth = maxHealth;
     }
 
     public void TakeDamage(float amount)
     {
-        currentHealth -= amount;
-        //Debug.Log($"Player took {amount} damage. Current health: {currentHealth}");
+        currentHealth -= amount / PlayerUpgradeSystem.instance.damageReduction;
 
         if (currentHealth <= 0)
         {

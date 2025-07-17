@@ -7,7 +7,7 @@ public class DPSZone : MonoBehaviour
     {
         if (other.gameObject.TryGetComponent(out Health enemy))
         {
-            enemy.TakeDamage((DPS / Time.deltaTime + PlayerUpgradeSystem.instance.damageBonus) * PlayerUpgradeSystem.instance.damageModifier);
+            enemy.TakeDamage((DPS / Time.deltaTime + PlayerUpgradeSystem.instance.damageFlat) * PlayerUpgradeSystem.instance.damagePercentage);
         }
     }
 }

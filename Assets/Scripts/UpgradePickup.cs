@@ -1,14 +1,49 @@
+using System;
 using UnityEngine;
 
 public class UpgradePickup : MonoBehaviour
 {
-    public enum UpgradeType { Damage, FireRate, Special }
+    [Serializable]
+    public enum UpgradeType
+    {
+        DamageFlat,
+        DamagePercentage,
+        FireRate,
+        MovementSpeed,
+        JumpHeight,
+        ProjectileSize,
+        ProjectileSpeed,
+        MultiShot,
+        CritChance,
+        CritDamageMultiplier,
+        HealthBonusFlat,
+        HealthBonusPercentage,
+        DamageReduction,
+        MagazineSizeBonus
+    }
 
     public UpgradeType upgradeType;
     public float value = 5f;
     [SerializeField] private Vector3 offset = Vector3.up;
     [SerializeField] private string text;
     public GameObject parent;
+
+    [SerializeField] private float rotationSpeed = 20f;
+    [SerializeField] private float bobHeight = 0.1f;
+    [SerializeField] private float bobSpeed = 1f;
+
+    private Vector3 startPosition;
+
+    private void Start()
+    {
+        startPosition = transform.position;
+    }
+
+    private void Update()
+    {
+        transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
+        transform.position = startPosition + Vector3.up * (Mathf.Sin(Time.time * bobSpeed) * bobHeight);
+    }
 
     public void trigger()
     {

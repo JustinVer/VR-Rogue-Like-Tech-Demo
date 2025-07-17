@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2880183690228197416}
   - component: {fileID: 1411566313971886443}
   m_Layer: 6
-  m_Name: Pickup
+  m_Name: MultiShot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 1a6b3d28458103d4eb5e482319e55222, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -122,10 +122,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ec16737848dfca42b765acecbf98d31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  upgradeType: 0
+  upgradeType: 7
   value: 1
   offset: {x: 0, y: 1, z: 0}
-  text: This is example Text. Example, Example, Example
+  text: Increases the number of bullets fired in an arc by 1
+  parent: {fileID: 0}
+  rotationSpeed: 20
+  bobHeight: 0.1
+  bobSpeed: 1
 --- !u!54 &2880183690228197416
 Rigidbody:
   m_ObjectHideFlags: 0

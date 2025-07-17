@@ -18,6 +18,11 @@ public class Magazine : MonoBehaviour
 
     public enum AmmoType { Pistol, Rifle, Sniper, Shotgun }
 
+    private void Start()
+    {
+        shots = Mathf.RoundToInt(shots * PlayerUpgradeSystem.instance.magazineSizePercentage);
+    }
+
     private void Update()
     {
         if (groundTouchedTime > 0)

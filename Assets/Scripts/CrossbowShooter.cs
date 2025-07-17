@@ -24,6 +24,7 @@ public class CrossbowShooter : Holsterable
 
     private bool hasShot = false;
     [SerializeField] private Animator animator;
+    [SerializeField] private float sideOffset = 0.27f;
 
     void Awake()
     {
@@ -95,21 +96,26 @@ public class CrossbowShooter : Holsterable
     {
         if ((fireRateDelay / PlayerUpgradeSystem.instance.fireRateModifier) <= timeSinceShot && hasShot)
         {
-            GameObject proj = Instantiate(projectilePrefab, muzzlePoint.position, muzzlePoint.rotation);
-            if (proj.TryGetComponent<Rigidbody>(out var rb))
+            for (int i = 0; i < PlayerUpgradeSystem.instance.multiShot; i++)
             {
-                rb.velocity = muzzlePoint.forward * shootForce;
+                Vector3 sideOffsetCalc = this.transform.right * (((PlayerUpgradeSystem.instance.multiShot / 2f) - 0.5f) - i) * sideOffset;
+                GameObject proj = Instantiate(projectilePrefab, muzzlePoint.position + sideOffsetCalc, muzzlePoint.rotation);
+                proj.transform.localScale = proj.transform.localScale * PlayerUpgradeSystem.instance.projectileSizeModifier;
+                if (proj.TryGetComponent<Rigidbody>(out var rb))
+                {
+                    rb.velocity = muzzlePoint.forward * shootForce * PlayerUpgradeSystem.instance.projectileSpeedModifier;
+                }
+                timeSinceShot = 0f;
+                if (currentMag != null && currentMag.removeBullet())
+                {
+                    hasShot = true;
+                }
+                else
+                {
+                    hasShot = false;
+                }
+                //animator.SetTrigger("Fire");
             }
-            timeSinceShot = 0f;
-            if (currentMag != null && currentMag.removeBullet())
-            {
-                hasShot = true;
-            }
-            else
-            {
-                hasShot = false;
-            }
-            //animator.SetTrigger("Fire");
         }
     }
 
