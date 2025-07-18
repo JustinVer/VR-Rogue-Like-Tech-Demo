@@ -111,8 +111,15 @@ public abstract class BaseEnemy : MonoBehaviour, Health
 
     public virtual void TakeDamage(float amount)
     {
-        currentHealth -= (amount / GameManager.Instance.currentDifficulty);
+        float damageDealt = amount / GameManager.Instance.currentDifficulty;
+        currentHealth -= damageDealt;
+
+        Vector3 popupPosition = transform.position + healthBarOffset + new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
+        DamagePopUp.Create(popupPosition, (int)damageDealt, false);
+
+
         UpdateHealthBar();
+
         if (currentHealth <= 0)
         {
             if (!dead)

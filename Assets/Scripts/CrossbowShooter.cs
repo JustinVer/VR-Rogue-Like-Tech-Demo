@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
@@ -10,7 +9,6 @@ public class CrossbowShooter : Holsterable
     public GameObject projectilePrefab;
     public Transform muzzlePoint;
     public float shootForce = 20f;
-    public InputActionReference fireAction;
     private XRGrabInteractable grabInteractable;
     private bool isHeld = false;
     private float timeSinceShot = 0f;
@@ -33,14 +31,12 @@ public class CrossbowShooter : Holsterable
 
     void OnEnable()
     {
-        fireAction?.action.Enable();
         grabInteractable.selectEntered.AddListener(OnGrab);
         grabInteractable.selectExited.AddListener(OnRelease);
     }
 
     void OnDisable()
     {
-        fireAction?.action.Disable();
         grabInteractable.selectEntered.RemoveListener(OnGrab);
         grabInteractable.selectExited.RemoveListener(OnRelease);
     }

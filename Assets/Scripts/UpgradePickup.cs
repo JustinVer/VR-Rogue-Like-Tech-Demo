@@ -51,9 +51,11 @@ public class UpgradePickup : MonoBehaviour
 
     public void trigger()
     {
-        if (PlayerUpgradeSystem.instance)
+        if (PlayerUpgradeSystem.instance != null)
         {
             PlayerUpgradeSystem.instance.ApplyUpgrade(upgradeType, value);
+            powerUpTextBox.text = "";
+            GeneralReferences.Instance.returnTextBox(powerUpTextObject);
             hideText();
             try
             {
@@ -74,13 +76,16 @@ public class UpgradePickup : MonoBehaviour
         powerUpTextObject.gameObject.SetActive(true);
         powerUpTextObject.transform.position = parent.transform.position + offset;
         powerUpTextBox.text = text;
-        Debug.Log("Rotation = " + parent.transform.rotation + " " + Quaternion.Euler(0, 180, 0) + " " + parent.transform.rotation * Quaternion.Euler(0, 180, 0));
         powerUpTextObject.transform.rotation = parent.transform.rotation * Quaternion.Euler(0, 180, 0);
     }
 
     public void hideText()
     {
+        powerUpTextObject.transform.position = new Vector3(0, 0, 0);
+        Debug.Log("Text is trying to hidden");
         powerUpTextBox.text = "";
+        Debug.Log("Returning object from pickup = " + powerUpTextObject.name);
         GeneralReferences.Instance.returnTextBox(powerUpTextObject);
+        Debug.Log("Text is hidden");
     }
 }

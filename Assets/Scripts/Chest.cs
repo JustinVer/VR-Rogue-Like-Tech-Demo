@@ -10,10 +10,6 @@ public class Chest : MonoBehaviour
     [SerializeField] private int powerUpCount = 2;
     private List<GameObject> pickups = new List<GameObject>();
 
-    private void Start()
-    {
-        trigger();
-    }
     public void trigger()
     {
         if (GeneralReferences.Instance.allPowerUps != null && GeneralReferences.Instance.allPowerUps.Length >= 1)

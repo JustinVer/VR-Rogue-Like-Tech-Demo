@@ -28,6 +28,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "B Button",
+            "id": "904ad948-3bc1-430c-8dc2-dc249efaf5d6",
+            "actions": [
+                {
+                    "name": "B",
+                    "type": "Button",
+                    "id": "d01c13ff-6c04-4490-b5bc-929effbf154a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "75fe4140-b84d-42f9-8713-1968ff489b4a",
+                    "path": "<XRController>{RightHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "B",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

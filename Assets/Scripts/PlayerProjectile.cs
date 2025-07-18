@@ -10,11 +10,11 @@ public class PlayerProjectile : Projectile
             {
                 if (Random.value < PlayerUpgradeSystem.instance.criticalChance)
                 {
-                    enemy.TakeDamage((damage * PlayerUpgradeSystem.instance.damageFlat) * PlayerUpgradeSystem.instance.damagePercentage * PlayerUpgradeSystem.instance.criticalDamageMultiplier);
+                    enemy.TakeDamage((damage + PlayerUpgradeSystem.instance.damageFlat) * PlayerUpgradeSystem.instance.damagePercentage * PlayerUpgradeSystem.instance.criticalDamageMultiplier);
                 }
                 else
                 {
-                    enemy.TakeDamage((damage * PlayerUpgradeSystem.instance.damageFlat) * PlayerUpgradeSystem.instance.damagePercentage);
+                    enemy.TakeDamage((damage + PlayerUpgradeSystem.instance.damageFlat) * PlayerUpgradeSystem.instance.damagePercentage);
                 }
             }
             Destroy(gameObject);
