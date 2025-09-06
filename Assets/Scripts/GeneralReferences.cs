@@ -127,6 +127,6 @@ public class GeneralReferences : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(textBoxAvailable[0] + " " + textBoxes[0].name);
+        //Debug.Log(textBoxAvailable[0] + " " + textBoxes[0].name);
     }
 }
