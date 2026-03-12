@@ -455,9 +455,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fc38d3bdf612e44eb76d3e8686b053b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minRoomSize: 50
+  minRoomSize: 75
   maxRoomSize: 100
-  minEnemyPercentage: 0.05
+  minEnemyPercentage: 0.07
   maxEnemyPercentage: 0.1
   floorPrefab1: {fileID: 4500182590525042551, guid: bad351c878112904cbbc404a34243224, type: 3}
   floorPrefab2: {fileID: 8772164617101858029, guid: fa306266e6d7b2d47a760ef1081bdf80, type: 3}
@@ -2753,6 +2753,7 @@ MonoBehaviour:
   activeRoom1: {fileID: 488089157}
   currentDifficulty: 1
   difficultyIncrease: 0.02
+  playerHealth: 100
 --- !u!4 &1514079338
 Transform:
   m_ObjectHideFlags: 0
@@ -2853,6 +2854,8 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: -3323478827253837908, guid: e049cd399c9297f4b837f445ca747ec8, type: 3}
   positionOffset: {x: 0, y: 0, z: 0.1}
+  healthText: {fileID: 1080468270}
+  roomText: {fileID: 975493164}
 --- !u!114 &1764733794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3365,6 +3368,10 @@ PrefabInstance:
     - target: {fileID: 3383297307320457001, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_RenderPostProcessing
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5048755840482987793, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.104
       objectReference: {fileID: 0}
     - target: {fileID: 6232745470614056090, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_Height

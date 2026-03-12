@@ -124,7 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeType: 10
   value: 20
-  offset: {x: 0, y: 1, z: 0}
+  offset: {x: 0, y: 1.5, z: 0}
   text: Increases base hit points by 20
   parent: {fileID: 0}
   rotationSpeed: 20

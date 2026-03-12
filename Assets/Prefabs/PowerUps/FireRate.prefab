@@ -124,7 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeType: 2
   value: 0.05
-  offset: {x: 0, y: 1, z: 0}
+  offset: {x: 0, y: 1.5, z: 0}
   text: Increases fire rate by 5%
   parent: {fileID: 0}
   rotationSpeed: 20

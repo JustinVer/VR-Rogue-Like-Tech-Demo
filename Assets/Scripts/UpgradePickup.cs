@@ -55,7 +55,6 @@ public class UpgradePickup : MonoBehaviour
         {
             PlayerUpgradeSystem.instance.ApplyUpgrade(upgradeType, value);
             powerUpTextBox.text = "";
-            GeneralReferences.Instance.returnTextBox(powerUpTextObject);
             hideText();
             try
             {

@@ -124,7 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeType: 9
   value: 0.12
-  offset: {x: 0, y: 1, z: 0}
+  offset: {x: 0, y: 1.5, z: 0}
   text: Increases critical hit damage multiplier by 12%
   parent: {fileID: 0}
   rotationSpeed: 20

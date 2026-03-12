@@ -4,19 +4,18 @@ public class PlayerHealth : MonoBehaviour, Health
 {
     public float baseHealth = 100f;
     public float maxHealth = 100f;
-    private float currentHealth;
 
     private void Start()
     {
         PlayerUpgradeSystem.instance.playerHealth = this;
-        currentHealth = maxHealth;
+        GameManager.Instance.playerHealth = maxHealth;
     }
 
     public void TakeDamage(float amount)
     {
-        currentHealth -= amount / PlayerUpgradeSystem.instance.damageReduction;
+        GameManager.Instance.playerHealth -= amount / PlayerUpgradeSystem.instance.damageReduction;
 
-        if (currentHealth <= 0)
+        if (GameManager.Instance.playerHealth <= 0)
         {
             Die();
         }
@@ -25,13 +24,13 @@ public class PlayerHealth : MonoBehaviour, Health
     private void Die()
     {
         //Debug.Log("Player has died.");
-        currentHealth = maxHealth;
+        GameManager.Instance.playerHealth = maxHealth;
         // Add your death logic here (e.g., game over screen, respawn, etc.)
     }
 
     public float GetCurrentHealth()
     {
-        return currentHealth;
+        return GameManager.Instance.playerHealth;
     }
 
     public float GetMaxHealth()

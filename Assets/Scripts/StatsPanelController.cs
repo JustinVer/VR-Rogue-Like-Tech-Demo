@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,6 +24,9 @@ public class StatsPanelController : MonoBehaviour
     public Vector3 positionOffset = new Vector3(0, 0, 0.1f); // Push it slightly forward
 
     private RectTransform panelRectTransform;
+
+    [SerializeField] private TextMeshProUGUI healthText;
+    [SerializeField] private TextMeshProUGUI roomText;
 
     private void Awake()
     {
@@ -92,5 +96,9 @@ public class StatsPanelController : MonoBehaviour
         Vector3 lookAtPosition = new Vector3(cameraTransform.position.x, cameraTransform.position.y, cameraTransform.position.z);
         statsPanel.transform.LookAt(lookAtPosition);
         statsPanel.transform.rotation *= Quaternion.Euler(0, 180, 0);
+
+        //Update stats
+        healthText.text = "Health: " + GameManager.Instance.playerHealth;
+        roomText.text = "Room: " + ((int)((GameManager.Instance.currentDifficulty - 1) / GameManager.Instance.difficultyIncrease) + 1);
     }
 }

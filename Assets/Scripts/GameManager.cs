@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
     public float currentDifficulty = 1f;
     public float difficultyIncrease = 0.02f;
 
+    public float playerHealth = 100f;
+
     private void Awake()
     {
         // A simple singleton pattern to make the instance easily accessible.

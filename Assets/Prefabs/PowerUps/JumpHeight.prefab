@@ -124,7 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeType: 4
   value: 0.5
-  offset: {x: 0, y: 1, z: 0}
+  offset: {x: 0, y: 1.5, z: 0}
   text: Increases jump height
   parent: {fileID: 0}
   rotationSpeed: 20
